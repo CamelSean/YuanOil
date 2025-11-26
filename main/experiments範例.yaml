@@ -1,0 +1,111 @@
+# 實驗結果儲存的 ROOT 目錄
+results_base_dir: '/home/yuan/Oil_Project_10-8/result_model/DV4_big_small_v2'
+# Excel 記錄檔的路徑 
+excel_log_path: 'OIL_PROJECT/result/experiment_log.xlsx'
+
+# 要執行的 Piepeline 實驗列表
+experiments:
+  # ===================================================================
+  # 參數設定說明：
+  # - experiment_name: 實驗名稱，會用來命名結果資料
+  # - mode: 執行模式，'train' 代表訓練 + 評估，'test' 代表只評估
+  # - run: 是否執行該實驗，True 代表執行，False 代表跳過 ( 可以不用打，預設True)
+  # - base_model: 設定Pretrained模型的路徑，如果是直接執行就是Pretrained的yolo11n-seg.pt，
+  #   如果是微調模式(只要用搜尋模式{{}}去指定訓練完的模型)，並且mode是'train'
+  # - dataset: 資料集設定，包括路徑、訓練/驗證/測試資料夾、類別數量和名稱
+  #   path: 資料集根目錄的路徑
+  #   train: 訓練資料夾的相對路徑 (可不用打，預設是 'images/train')
+  #   val: 驗證資料夾的相對路徑 ( 可不用打，預設是 'images/val')
+  #   test: 測試資料夾的相對路徑 ( 可不用打，預設是 'images/test')
+  #   nc: 類別數量 ( 可以不用打，預設是 1 )
+  #   names: 類別名稱列表 ( 可以不用打，預設是 ['oil'] )
+  # - epochs: 訓練的總輪數
+  # - imgsz: 訓練和評估的圖片尺寸
+  # - batch_size: 訓練時的批次大小
+  # - patience: 訓練時的耐心值，0 代表不使用早停 (Early Stopping)
+  # - eval_conf: 評估時的置信度閾值 ( 可以不用打，預設是 0.25)
+  # - eval_iou: 評估時的 NMS IoU 閾值 ( 可以不用打，預設是 0.6 )
+  # - post_tests: 測試設定，若無此設定，會按照 mode 執行評估，train仍會直接以dataset資料集進行評估
+  #   - test_name: 設定 測試名稱
+  #   - dataset: 使用的資料集
+  #   - reconstruction: 是否啟用重組評估，若不指定，預設為 False
+  #     enabled: 是否啟用重組評估 (True/False)
+  #     original_data_root: 原始資料集的ROOT目錄路徑，用於重組評估
+
+
+# ===================================================================
+# 實驗 1: YOLO 訓練與多重評估
+# 訓練一個 YOLO 模型，並在訓練結束後執行三種不同的後續評估任務。
+# ===================================================================
+- experiment_name: 'YOLO_train_and_multi_eval'
+  mode: 'train'
+  architecture: 'yolo'
+  base_model: 'yolo11n-seg.pt' # 假設 yolo11n-seg.pt 在可訪問的路徑中
+  dataset:
+    path: 'OIL_PROJECT/dataset/dataset_SAR_2/SAR_2_Patch/Patched_Data_P1024_O128_BGKeep0p/SAR_2'
+  train:
+    epochs: 800
+    imgsz: 1024
+    batch_size: 32
+    patience: 0
+  post_tests:
+    # 測試 1: 在 SAR 資料集上進行重組評估
+    - test_name: 'eval_SAR_reconstruction'
+      dataset: 
+        path: 'OIL_PROJECT/dataset/dataset_SAR_2/SAR_2_Patch/Patched_Data_P1024_O128_BGKeep0p/SAR_2' 
+      reconstruction:
+        enabled: true
+        original_data_root: 'OIL_PROJECT/dataset/dataset_SAR_2/SAR_2'
+
+    # 測試 2: 使用同一個模型，在 Zenodo 資料集上進行重組評估
+    - test_name: 'eval_Zenodo_reconstruction'
+      dataset:
+        path: 'OIL_PROJECT/dataset/dataset_zenodo/zenodo_patch/Patched_Data_P1024_O128_BGKeep0p/zenodo' 
+      reconstruction:
+        enabled: true
+        original_data_root: 'OIL_PROJECT/dataset/dataset_zenodo/zenodo'
+
+    # 測試 3: 直接在 Zenodo 的圖塊 (patch) 資料集上進行標準評估 (不重組)
+    - test_name: 'eval_Zenodo_patches_standard'
+      dataset:
+        path: 'OIL_PROJECT/dataset/dataset_zenodo/zenodo_patch/Patched_Data_P1024_O128_BGKeep0p/zenodo' 
+
+# ===================================================================
+# 實驗 2: DeepLabV3+ 訓練 (從 TorchVision 預訓練權重開始)
+# 演示如何使用 architecture_cfg 來載入特定的 torchvision 權重。
+# ===================================================================
+- experiment_name: 'DeepLab_from_torchvision'
+  mode: 'train'
+  architecture: 'deeplabv3+'
+  base_model: '' # 設為空，因為我們要從 torchvision 下載
+  architecture_cfg:
+    torchvision_weights: 'DeepLabV3_ResNet50_Weights.COCO_WITH_VOC_LABELS_V1'
+  dataset:
+    path: 'OIL_PROJECT/dataset/dataset_zenodo/zenodo_vv_vh_ImagesResized512'
+  imgsz: 512
+  train:
+    epochs: 100
+    imgsz: 512
+    batch_size: 8
+    patience: 20
+  post_tests:
+    - test_name: 'Final_Evaluation_on_512px'
+      dataset:
+        path: 'OIL_PROJECT/dataset/dataset_zenodo/zenodo_vv_vh_ImagesResized512'
+
+# ===================================================================
+# 實驗 3: 僅測試模式
+# 直接載入一個已經訓練好的模型權重，並對其執行評估。
+# ===================================================================
+- experiment_name: 'YOLO_test_only'
+  mode: 'test'
+  architecture: 'yolo'
+  base_model: 'path/to/your/trained_best.pt' # <--- 請務必將此路徑替換為您真實的 best.pt 檔案路徑
+  # 在 test 模式下，train 區塊會被忽略
+  post_tests:
+    - test_name: 'Final_Evaluation'
+      dataset:
+        path: 'path/to/your/test_dataset' # <--- 請替換為您的測試資料集路徑
+      imgsz: 640 # 可以在測試時指定不同於訓練時的圖片尺寸
+      eval_conf: 0.3
+      eval_iou: 0.5

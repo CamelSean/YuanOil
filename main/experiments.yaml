@@ -1,0 +1,1320 @@
+# 實驗結果儲存的根目錄
+results_base_dir: '/home/yuan/Oil_Project_10-8/result_model/DV4_big_small_v2'
+# Excel 記錄檔的路徑 
+excel_log_path: '/home/yuan/Oil_Project_10-8/result_excel/DV4_big_small_v2_log.xlsx' 
+
+# 要執行的實驗列表
+experiments:
+  # - experiment_name: 'YOLO_2048to512'
+  #   mode: 'train'
+  #   architecture: 'yolo'
+  #   base_model: '/home/yuan/.conda/envs/yuan_env_cuda12-4/lib/python3.10/site-packages/ultralytics/cfg/models/11/yolo11-seg.yaml' 
+  #   dataset:
+  #     path: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh'
+  #   train:
+  #     epochs: 10
+  #     imgsz: 512
+  #     batch_size: 128
+  #     workers: 4
+  #     amp: True
+  #     patience: 50
+  #     lr0: 0.01
+  #     lrf: 0.0001
+  #     mosaic: 0
+  #     degrees: 0
+  #     translate: 0.1
+  #     scale: 0
+  #     dropout: 0.1
+  #   post_tests:
+  #     - test_name: 'zenodo'
+  #       dataset:
+  #         path: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh'
+  #       reconstruction:
+  #         enabled: false
+
+  # # - experiment_name: 'YOLO_512'
+  # #   mode: 'train'
+  # #   architecture: 'yolo'
+  # #   base_model: '/home/yuan/.conda/envs/yuan_env_cuda12-4/lib/python3.10/site-packages/ultralytics/cfg/models/11/yolo11-seg.yaml' 
+  # #   dataset:
+  # #     path: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh_resize512'
+  # #   train:
+  # #     epochs: 800
+  # #     imgsz: 512
+  # #     batch_size: 128
+  # #     workers: 4
+  # #     amp: True
+  # #     patience: 200
+  # #     lr0: 0.01
+  # #     lrf: 0.0001
+  # #     mosaic: 0
+  # #     degrees: 45
+  # #     translate: 0.1
+  # #     scale: 0.2
+  # #     dropout: 0.1
+  # #   post_tests:
+  # #     - test_name: 'zenodo'
+  # #       dataset:
+  # #         path: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh_resize512'
+  # #       reconstruction:
+  # #         enabled: false
+
+
+  # - experiment_name: 'DeepLab_512'
+  #   mode: 'train'
+  #   architecture: 'deeplabv3+'
+  #   # 從頭開始訓練 (或使用 TorchVision 預訓練權重，取決於您的 adapter 設定)
+  #   base_model: '' 
+  #   dataset:
+  #     path: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh_resize512'
+  #   train:
+  #     epochs: 10
+  #     imgsz: 512
+  #     workers: 4
+  #     patience: 100
+  #     batch_size: 32    # <== 降低實際的 batch size
+  #     amp: True        # <== 啟用 AMP
+  #     degrees: 0
+  #     translate: 0.1
+  #     scale: 0.2
+  #     gradient_accumulation_steps: 4 # <== 模擬 2*4=8 的有效 batch size
+  #   post_tests:
+  #     - test_name: 'zenodo'
+  #       dataset:
+  #         path: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh_resize512'
+  #       reconstruction:
+  #         enabled: false
+  #       evaluation_on_original:  # 在此控制是否啟用高解析度評估
+  #         enabled: true  
+  #         original_data_root: 'OIL_PROJECT/dataset/dataset_zenodo/zenodo_vv_vh'
+
+  # # - experiment_name: 'DeepLab_512'
+  # #   mode: 'test'
+  # #   architecture: 'deeplabv3+'
+  # #   base_model: '/home/yuan/Oil_Project_10-8/result_model/zenodo_vv_vh/20251010-163408_DeepLab_512/weights/best.pt' 
+  # #   post_tests:
+  # #     - test_name: 'zenodo'
+  # #       dataset:
+  # #         path: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh_resize512'
+  # #       reconstruction:
+  # #         enabled: false
+  # #       evaluation_on_original:  # 在此控制是否啟用高解析度評估
+  # #         enabled: true  
+  # #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh'
+  # #       draw_bounding_boxes: false
+
+  # - experiment_name: 'Segformer_512'
+  #   mode: 'train'
+  #   architecture: 'segformer'
+  #   base_model: '' 
+  #   dataset:
+  #         path: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh_resize512'
+  #   train:
+  #     epochs: 10
+  #     imgsz: 512
+  #     workers: 4
+  #     patience: 100
+  #     batch_size: 32    # <== 降低實際的 batch size
+  #     amp: True        # <== 啟用 AMP
+  #     degrees: 0
+  #     translate: 0.1
+  #     scale: 0
+  #     gradient_accumulation_steps: 4 # <== 模擬 2*4=8 的有效 batch size
+  #   post_tests:
+  #     - test_name: 'zenodo'
+  #       dataset:
+  #         path: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh_resize512'
+  #       reconstruction:
+  #         enabled: false
+  #       evaluation_on_original:  # 在此控制是否啟用高解析度評估
+  #         enabled: true  
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh'
+  #       draw_bounding_boxes: false
+
+  # - experiment_name: 'SegFormer_B0_with_Aux_Loss_512'
+  #   mode: 'train'
+  #   architecture: 'segformer_aux' 
+  #   base_model: '' 
+  #   architecture_cfg:
+  #     # [關鍵] 在這裡設定輔助損失的權重
+  #     # 0.4 是一個常用的值，您可以自由調整
+  #     aux_loss_weight: 0.4
+  #     # (可選) 如果您使用 B1, B2 等不同大小的 SegFormer，
+  #     # 您可能需要根據其隱藏層的 channel 數來調整此參數
+  #     # aux_in_channels: 160  # B0 是 160, B1 是 256, ...
+  #   dataset:
+  #     path: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh_resize512'  
+  #   train:
+  #     epochs: 10
+  #     imgsz: 512
+  #     workers: 4
+  #     patience: 100
+  #     batch_size: 32    # <== 降低實際的 batch size
+  #     amp: True        # <== 啟用 AMP
+  #     degrees: 0
+  #     translate: 0.1
+  #     scale: 0
+  #     gradient_accumulation_steps: 4 # <== 模擬 2*4=8 的有效 batch size
+  #   post_tests:
+  #     - test_name: 'zenodo'
+  #       dataset:
+  #         path: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh_resize512'
+  #       reconstruction:
+  #         enabled: false
+  #       evaluation_on_original:  # 在此控制是否啟用高解析度評估
+  #         enabled: true  
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh'
+  #       draw_bounding_boxes: false
+
+
+  # # ===================================================================
+  # # 實驗 : 標準 UNet - 從零開始訓練 (不使用預訓練權重)
+  # # 描述: 如果您想進行公平的比較，可以將 encoder_weights 設為 None。
+  # # ===================================================================
+  # - experiment_name: 'Unet_ResNet50'
+  #   mode: 'train'
+  #   architecture: 'unet'
+  #   architecture_cfg:
+  #     encoder_name: 'resnet50'
+  #     encoder_weights: null # <-- 設為 null 或 None 來關閉預訓練權重
+  #   dataset:
+  #     path: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh_resize512'
+  #   train:
+  #     epochs: 10
+  #     imgsz: 512
+  #     workers: 4
+  #     patience: 200
+  #     batch_size: 32    # <== 降低實際的 batch size
+  #     amp: True        
+  #     degrees: 0
+  #     translate: 0.1
+  #     scale: 0
+  #     gradient_accumulation_steps: 4 
+  #   post_tests:
+  #     - test_name: 'zenodo'
+  #       dataset:
+  #         path: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh_resize512'
+  #       reconstruction:
+  #         enabled: false
+  #       evaluation_on_original: 
+  #         enabled: true  
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh'
+  #       draw_bounding_boxes: false
+
+  # - experiment_name: 'Unet_aux_ResNet50'
+  #   mode: 'train'
+  #   architecture: 'unet_aux'
+  #   architecture_cfg:
+  #     encoder_name: 'resnet50'
+  #     encoder_weights: null 
+  #     aux_loss_weight: 0.4 
+  #   dataset:
+  #     path: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh_resize512'
+  #   train:
+  #     epochs: 10
+  #     imgsz: 512
+  #     workers: 4
+  #     patience: 200
+  #     batch_size: 32   
+  #     amp: True        
+  #     degrees: 0
+  #     translate: 0.1
+  #     scale: 0
+  #     gradient_accumulation_steps: 4 
+  #   post_tests:
+  #     - test_name: 'zenodo'
+  #       dataset:
+  #         path: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh_resize512'
+  #       reconstruction:
+  #         enabled: false
+  #       evaluation_on_original: 
+  #         enabled: true  
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh'
+  #       draw_bounding_boxes: false
+
+  # # ===================================================================
+  # # 實驗 : UNet - 使用 EfficientNet-B4 Encoder
+  # # ===================================================================
+  # - experiment_name: 'Unet_EfficientNetB4'
+  #   mode: 'train'
+  #   architecture: 'unet' # <-- 使用帶有 aux loss 的 adapter
+  #   architecture_cfg:
+  #     encoder_name: 'efficientnet-b4'
+  #   base_model: '/home/yuan/Oil_Project_10-8/result_model/zenodo_vv_vh/20251014-013830_Unet_EfficientNetB4/weights/best.pt'
+  #   dataset:
+  #     path: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh_resize512'
+  #   train:
+  #     epochs: 100
+  #     imgsz: 512
+  #     workers: 4
+  #     patience: 10
+  #     batch_size: 24   
+  #     amp: True        
+  #     degrees: 0
+  #     translate: 0.1
+  #     scale: 0
+  #     gradient_accumulation_steps: 8 
+  #   post_tests:
+  #     - test_name: 'zenodo'
+  #       dataset:
+  #         path: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh_resize512'
+  #       reconstruction:
+  #         enabled: false
+  #       evaluation_on_original: 
+  #         enabled: true  
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh'
+  #       draw_bounding_boxes: false
+
+  # # ===================================================================
+  # # 實驗 : UNet + 輔助損失 - 使用 EfficientNet-B4 Encoder
+  # # ===================================================================
+  # - experiment_name: 'Unet_Aux_EfficientNetB4'
+  #   mode: 'train'
+  #   architecture: 'unet_aux' # <-- 使用帶有 aux loss 的 adapter
+  #   architecture_cfg:
+  #     encoder_name: 'efficientnet-b4'
+  #     encoder_weights: null
+  #     aux_loss_weight: 0.6 # 設定輔助損失的權重
+  #     in_channels: 2   
+  #   dataset:
+  #     path: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh_resize512_resplit_66_34'
+  #   train:
+  #     epochs: 800
+  #     imgsz: 512
+  #     workers: 4
+  #     patience: 200
+  #     batch_size: 22  
+  #     amp: True        
+  #     degrees: 15
+  #     translate: 0.1
+  #     fliplr: 0.5
+  #     flipud: 0.5
+  #     scale: 1
+  #     gradient_accumulation_steps: 8 
+  #   post_tests:
+  #     - test_name: 'zenodo'
+  #       dataset:
+  #         path: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh_resize512_resplit_66_34'
+  #       reconstruction:
+  #         enabled: false
+  #       evaluation_on_original: 
+  #         enabled: true  
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh'
+  #       draw_bounding_boxes: false
+
+
+  # # ===================================================================
+  # # 實驗 : UNet + 輔助損失 - 使用 EfficientNet-B4 Encoder
+  # # ===================================================================
+  # - experiment_name: 'Unet_Aux_EfficientNetB4_val_as_test'
+  #   mode: 'test'
+  #   architecture: 'unet_aux' # <-- 使用帶有 aux loss 的 adapter
+  #   base_model: '/home/yuan/Oil_Project_10-8/result_model/zenodo_vv_vh/20251017-104201_Unet_Aux_EfficientNetB4/weights/best.pt'
+  #   architecture_cfg:
+  #     encoder_name: 'efficientnet-b4'
+  #     encoder_weights: null
+  #     aux_loss_weight: 0.6 # 設定輔助損失的權重
+  #   post_tests:
+  #     - test_name: 'zenodo_validation_as_test'
+  #       dataset:
+  #         path: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh_resize512_resplit_66_34_val-set_trans_to_test'
+  #       reconstruction:
+  #         enabled: false
+  #       evaluation_on_original: 
+  #         enabled: false  
+  #       draw_bounding_boxes: false
+
+
+  # - experiment_name: 'Paper_UNet_Test_channel2'
+  #   mode: 'train'
+  #   architecture: 'paper_unet'
+  #   architecture_cfg:
+  #     # 如果您仍使用 RGB 圖片，請設為 3。
+  #     in_channels: 2
+  #     loss_function: 'focal'
+  #   base_model: '' # 從零開始訓練
+  #   dataset:
+  #     path: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh_resize512'
+  #   train:
+  #     epochs: 800
+  #     imgsz: 512
+  #     batch_size: 48
+  #     workers: 4
+  #     patience: 25
+  #     lr0: 0.0001       # 您可以自由設定學習率
+  #     amp: True        
+  #     degrees: 10
+  #     translate: 0.1
+  #     scale: 0
+  #     fliplr: 0.5
+  #     flipud: 0.5
+  #     gradient_accumulation_steps: 1
+  #   post_tests:
+  #     - test_name: 'zenodo'
+  #       dataset:
+  #         path: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh_resize512'
+  #       reconstruction:
+  #         enabled: false
+  #       evaluation_on_original: 
+  #         enabled: true  
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh'
+  #       draw_bounding_boxes: false
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  # - experiment_name: 'YOLOv11_1024to512_o512_Atlantic'
+  #   mode: 'train'
+  #   architecture: 'yolo'
+  #   base_model: '/home/yuan/.conda/envs/yuan_env_cuda12-4/lib/python3.10/site-packages/ultralytics/cfg/models/11/yolo11-seg.yaml' 
+  #   dataset:
+  #     path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/NOAA__Atlantic_Ocean_High_Confidence_split_Patch/Patched_P1024_O512_BG100p/NOAA__Atlantic_Ocean_High_Confidence_split_Resize512'
+  #   imgsz: 512
+  #   train:
+  #     epochs: 800
+  #     imgsz: 512
+  #     batch_size: 128
+  #     workers: 4
+  #     amp: True
+  #     patience: 200
+  #     lr0: 0.01
+  #     lrf: 0.0001
+  #     mosaic: 0
+  #     degrees: 10
+  #     translate: 0.1
+  #     scale: 0
+  #     dropout: 0.1
+  #     fliplr: 0.5
+  #     flipud: 0.5
+  #   post_tests:
+  #     - test_name: 'DV4_SAR_1024to512_o512'
+  #       dataset:
+  #         path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/NOAA__Atlantic_Ocean_High_Confidence_split_Patch/Patched_P1024_O512_BG100p/NOAA__Atlantic_Ocean_High_Confidence_split_Resize512'
+  #       reconstruction:
+  #         enabled: true
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/NOAA__Atlantic_Ocean_High_Confidence_split'
+  #         original_patch_size: 1024
+  #       evaluation_on_original:  
+  #         enabled: true  
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/NOAA__Atlantic_Ocean_High_Confidence_split_Patch/Patched_P1024_O512_BG100p/NOAA__Atlantic_Ocean_High_Confidence_split'
+
+  # - experiment_name: 'YOLOv12_1024to512_o512_Atlantic'
+  #   mode: 'train'
+  #   architecture: 'yolo'
+  #   base_model: '/home/yuan/.conda/envs/yuan_env_cuda12-4/lib/python3.10/site-packages/ultralytics/cfg/models/12/yolo12-seg.yaml' 
+  #   dataset:
+  #     path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/NOAA__Atlantic_Ocean_High_Confidence_split_Patch/Patched_P1024_O512_BG100p/NOAA__Atlantic_Ocean_High_Confidence_split_Resize512'
+  #   imgsz: 512
+  #   train:
+  #     epochs: 800
+  #     imgsz: 512
+  #     batch_size: 128
+  #     workers: 4
+  #     amp: True
+  #     patience: 200
+  #     lr0: 0.01
+  #     lrf: 0.0001
+  #     mosaic: 0
+  #     degrees: 10
+  #     translate: 0.1
+  #     scale: 0
+  #     dropout: 0.1
+  #     fliplr: 0.5
+  #     flipud: 0.5
+  #   post_tests:
+  #     - test_name: 'DV4_SAR_1024to512_o512'
+  #       dataset:
+  #         path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/NOAA__Atlantic_Ocean_High_Confidence_split_Patch/Patched_P1024_O512_BG100p/NOAA__Atlantic_Ocean_High_Confidence_split_Resize512'
+  #       reconstruction:
+  #         enabled: true
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/NOAA__Atlantic_Ocean_High_Confidence_split'
+  #         original_patch_size: 1024
+  #       evaluation_on_original:  
+  #         enabled: true  
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/NOAA__Atlantic_Ocean_High_Confidence_split_Patch/Patched_P1024_O512_BG100p/NOAA__Atlantic_Ocean_High_Confidence_split'
+
+  # - experiment_name: 'DeepLab_1024to512o512_Atlantic'
+  #   mode: 'train'
+  #   architecture: 'deeplabv3+'
+  #   architecture_cfg:
+  #     in_channels: 1
+  #   # 從頭開始訓練 (或使用 TorchVision 預訓練權重，取決於您的 adapter 設定)
+  #   base_model: '' 
+  #   dataset:
+  #     path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/NOAA__Atlantic_Ocean_High_Confidence_split_Patch/Patched_P1024_O512_BG100p/NOAA__Atlantic_Ocean_High_Confidence_split_Resize512'
+  #   imgsz: 512
+  #   train:
+  #     epochs: 800
+  #     imgsz: 512
+  #     workers: 4
+  #     batch_size: 28
+  #     patience: 200
+  #     lr0: 0.0001      
+  #     amp: True        
+  #     degrees: 10
+  #     translate: 0.1
+  #     scale: 0
+  #     fliplr: 0.5
+  #     flipud: 0.5
+  #     gradient_accumulation_steps: 4
+  #   post_tests:
+  #     - test_name: 'DV4_SAR_1024to512_o512'
+  #       dataset:
+  #         path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/NOAA__Atlantic_Ocean_High_Confidence_split_Patch/Patched_P1024_O512_BG100p/NOAA__Atlantic_Ocean_High_Confidence_split_Resize512'
+  #       reconstruction:
+  #         enabled: true
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/NOAA__Atlantic_Ocean_High_Confidence_split'
+  #         original_patch_size: 1024
+  #       evaluation_on_original:  
+  #         enabled: true  
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/NOAA__Atlantic_Ocean_High_Confidence_split_Patch/Patched_P1024_O512_BG100p/NOAA__Atlantic_Ocean_High_Confidence_split'
+  #       draw_bounding_boxes: false
+
+  # - experiment_name: 'Segformer_1024to512_o512_Atlantic'
+  #   mode: 'train'
+  #   architecture: 'segformer_aux'
+  #   architecture_cfg:
+  #     aux_loss_weight: 0.6
+  #     in_channels: 1
+  #     hf_model_name: 'nvidia/segformer-b5-finetuned-ade-640-640'
+  #     aux_in_channels: 320
+  #   base_model: '' 
+  #   dataset:
+  #     path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/NOAA__Atlantic_Ocean_High_Confidence_split_Patch/Patched_P1024_O512_BG100p/NOAA__Atlantic_Ocean_High_Confidence_split_Resize512'
+  #   imgsz: 512
+  #   train:
+  #     epochs: 800
+  #     imgsz: 512
+  #     batch_size: 8
+  #     workers: 4
+  #     patience:  200
+  #     lr0: 0.0001      
+  #     amp: True        
+  #     degrees: 10
+  #     translate: 0.1
+  #     scale: 0
+  #     fliplr: 0.5
+  #     flipud: 0.5
+  #     gradient_accumulation_steps: 4
+  #   post_tests:
+  #     - test_name: 'DV4_SAR_1024to512_o512'
+  #       dataset:
+  #         path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/NOAA__Atlantic_Ocean_High_Confidence_split_Patch/Patched_P1024_O512_BG100p/NOAA__Atlantic_Ocean_High_Confidence_split_Resize512'
+  #       reconstruction:
+  #         enabled: true
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/NOAA__Atlantic_Ocean_High_Confidence_split'
+  #         original_patch_size: 1024
+  #       evaluation_on_original: 
+  #         enabled: true  
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/NOAA__Atlantic_Ocean_High_Confidence_split_Patch/Patched_P1024_O512_BG100p/NOAA__Atlantic_Ocean_High_Confidence_split'
+  #       draw_bounding_boxes: false
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  # - experiment_name: 'YOLOv11_1024to512_o512_small'
+  #   mode: 'train'
+  #   architecture: 'yolo'
+  #   base_model: '/home/yuan/.conda/envs/yuan_env_cuda12-4/lib/python3.10/site-packages/ultralytics/cfg/models/11/yolo11-seg.yaml' 
+  #   dataset:
+  #     path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel_Patch/HNM_P1024_O512_Resize512/hnm_3_gold_dataset_ratio_1_1'
+  #   imgsz: 512
+  #   train:
+  #     epochs: 800
+  #     imgsz: 512
+  #     batch_size: 128
+  #     workers: 2
+  #     amp: True
+  #     patience: 50
+  #     lr0: 0.01
+  #     lrf: 0.0001
+  #     mosaic: 0
+  #     degrees: 10
+  #     translate: 0.1
+  #     scale: 0
+  #     dropout: 0.1
+  #     fliplr: 0.5
+  #     flipud: 0.5
+  #   post_tests:
+  #     - test_name: 'DV4_SAR_1024to512_o512'
+  #       dataset:
+  #         path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel_Patch/HNM_P1024_O512_Resize512/hnm_3_gold_dataset_ratio_1_1'
+  #       reconstruction:
+  #         enabled: true
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel'
+  #         original_patch_size: 1024
+  #       evaluation_on_original:  
+  #         enabled: true  
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel_Patch/Patched_P1024_O512_BG100p'
+
+  # - experiment_name: 'YOLOv12_1024to512_o512_small'
+  #   mode: 'train' 
+  #   architecture: 'yolo'
+  #   base_model: '/home/yuan/.conda/envs/yuan_env_cuda12-4/lib/python3.10/site-packages/ultralytics/cfg/models/12/yolo12-seg.yaml' 
+  #   dataset:
+  #     path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel_Patch/HNM_P1024_O512_Resize512/hnm_3_gold_dataset_ratio_1_1'
+  #   imgsz: 512
+  #   train:
+  #     epochs: 800
+  #     imgsz: 512
+  #     batch_size: 128
+  #     workers: 2
+  #     amp: True
+  #     patience: 50
+  #     lr0: 0.01
+  #     lrf: 0.0001
+  #     mosaic: 0
+  #     degrees: 10
+  #     translate: 0.1
+  #     scale: 0
+  #     dropout: 0.1
+  #     fliplr: 0.5
+  #     flipud: 0.5
+  #   post_tests:
+  #     - test_name: 'DV4_SAR_1024to512_o512'
+  #       dataset:
+  #         path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel_Patch/HNM_P1024_O512_Resize512/hnm_3_gold_dataset_ratio_1_1'
+  #       reconstruction:
+  #         enabled: true
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel'
+  #         original_patch_size: 1024
+  #       evaluation_on_original:  
+  #         enabled: true  
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel_Patch/Patched_P1024_O512_BG100p'
+
+  # - experiment_name: 'DeepLab_1024to512o512_small'
+  #   mode: 'train'
+  #   architecture: 'deeplabv3+'
+  #   architecture_cfg:
+  #     in_channels: 1
+  #   # 從頭開始訓練 (或使用 TorchVision 預訓練權重，取決於您的 adapter 設定)
+  #   base_model: '' 
+  #   dataset:
+  #     path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel_Patch/HNM_P1024_O512_Resize512/hnm_3_gold_dataset_ratio_1_1'
+  #   imgsz: 512
+  #   train:
+  #     epochs: 800
+  #     imgsz: 512
+  #     workers: 4
+  #     batch_size: 28
+  #     patience: 50
+  #     lr0: 0.0001      
+  #     amp: True        
+  #     degrees: 10
+  #     translate: 0.1
+  #     scale: 0
+  #     fliplr: 0.5
+  #     flipud: 0.5
+  #     gradient_accumulation_steps: 4
+  #   post_tests:
+  #     - test_name: 'DV4_SAR_1024to512_o512'
+  #       dataset:
+  #         path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel_Patch/HNM_P1024_O512_Resize512/hnm_3_gold_dataset_ratio_1_1'
+  #       reconstruction:
+  #         enabled: true
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel'
+  #         original_patch_size: 1024
+  #       evaluation_on_original:  
+  #         enabled: true  
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel_Patch/Patched_P1024_O512_BG100p'
+  #       draw_bounding_boxes: false
+
+  # - experiment_name: 'Segformer_1024to512_o512_small'
+  #   mode: 'train'
+  #   architecture: 'segformer_aux'
+  #   architecture_cfg:
+  #     aux_loss_weight: 0.6
+  #     in_channels: 1
+  #     hf_model_name: 'nvidia/segformer-b5-finetuned-ade-640-640'
+  #     aux_in_channels: 320
+  #   base_model: '' 
+  #   dataset:
+  #     path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel_Patch/HNM_P1024_O512_Resize512/hnm_3_gold_dataset_ratio_1_1'
+  #   imgsz: 512
+  #   train:
+  #     epochs: 800
+  #     imgsz: 512
+  #     batch_size: 8
+  #     workers: 4
+  #     patience:  50
+  #     lr0: 0.0001      
+  #     amp: True        
+  #     degrees: 10
+  #     translate: 0.1
+  #     scale: 0
+  #     fliplr: 0.5
+  #     flipud: 0.5
+  #     gradient_accumulation_steps: 4
+  #   post_tests:
+  #     - test_name: 'DV4_SAR_1024to512_o512'
+  #       dataset:
+  #         path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel_Patch/HNM_P1024_O512_Resize512/hnm_3_gold_dataset_ratio_1_1'
+  #       reconstruction:
+  #         enabled: true
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel'
+  #         original_patch_size: 1024
+  #       evaluation_on_original: 
+  #         enabled: true  
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel_Patch/Patched_P1024_O512_BG100p'
+  #       draw_bounding_boxes: false
+
+  
+
+  # ############################
+
+
+
+
+
+  # - experiment_name: 'YOLOv11_2048to512_o512_small'
+  #   mode: 'train'
+  #   architecture: 'yolo'
+  #   base_model: '/home/yuan/.conda/envs/yuan_env_cuda12-4/lib/python3.10/site-packages/ultralytics/cfg/models/11/yolo11-seg.yaml' 
+  #   dataset:
+  #     path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel_Patch/HNM_P2048_O512_Resize512/hnm_3_gold_dataset_ratio_1_1'
+  #   imgsz: 512
+  #   train:
+  #     epochs: 800
+  #     imgsz: 512
+  #     batch_size: 128
+  #     workers: 2
+  #     amp: True
+  #     patience: 50
+  #     lr0: 0.01
+  #     lrf: 0.0001
+  #     mosaic: 0
+  #     degrees: 10
+  #     translate: 0.1
+  #     scale: 0
+  #     dropout: 0.1
+  #     fliplr: 0.5
+  #     flipud: 0.5
+  #   post_tests:
+  #     - test_name: 'DV4_SAR_2048to512_o512'
+  #       dataset:
+  #         path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel_Patch/HNM_P2048_O512_Resize512/hnm_3_gold_dataset_ratio_1_1'
+  #       reconstruction:
+  #         enabled: true
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel'
+  #         original_patch_size: 2048
+  #       evaluation_on_original:  
+  #         enabled: true  
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel_Patch/Patched_P2048_O512_BG100p/DV4_SAR_Small_v3_relabel'
+
+  # - experiment_name: 'YOLOv12_2048to512_o512_small'
+  #   mode: 'train' 
+  #   architecture: 'yolo'
+  #   base_model: '/home/yuan/.conda/envs/yuan_env_cuda12-4/lib/python3.10/site-packages/ultralytics/cfg/models/12/yolo12-seg.yaml' 
+  #   dataset:
+  #     path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel_Patch/HNM_P2048_O512_Resize512/hnm_3_gold_dataset_ratio_1_1'
+  #   imgsz: 512
+  #   train:
+  #     epochs: 800
+  #     imgsz: 512
+  #     batch_size: 128
+  #     workers: 2
+  #     amp: True
+  #     patience: 50
+  #     lr0: 0.01
+  #     lrf: 0.0001
+  #     mosaic: 0
+  #     degrees: 10
+  #     translate: 0.1
+  #     scale: 0
+  #     dropout: 0.1
+  #     fliplr: 0.5
+  #     flipud: 0.5
+  #   post_tests:
+  #     - test_name: 'DV4_SAR_2048to512_o512'
+  #       dataset:
+  #         path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel_Patch/HNM_P2048_O512_Resize512/hnm_3_gold_dataset_ratio_1_1'
+  #       reconstruction:
+  #         enabled: true
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel'
+  #         original_patch_size: 2048
+  #       evaluation_on_original:  
+  #         enabled: true  
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel_Patch/Patched_P2048_O512_BG100p/DV4_SAR_Small_v3_relabel'
+
+  # - experiment_name: 'DeepLab_2048to512_o512_small'
+  #   mode: 'train'
+  #   architecture: 'deeplabv3+'
+  #   architecture_cfg:
+  #     in_channels: 1
+  #   # 從頭開始訓練 (或使用 TorchVision 預訓練權重，取決於您的 adapter 設定)
+  #   base_model: '' 
+  #   dataset:
+  #     path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel_Patch/HNM_P2048_O512_Resize512/hnm_3_gold_dataset_ratio_1_1'
+  #   imgsz: 512
+  #   train:
+  #     epochs: 800
+  #     imgsz: 512
+  #     workers: 4
+  #     batch_size: 28
+  #     patience: 50
+  #     lr0: 0.0001      
+  #     amp: True        
+  #     degrees: 10
+  #     translate: 0.1
+  #     scale: 0
+  #     fliplr: 0.5
+  #     flipud: 0.5
+  #     gradient_accumulation_steps: 4
+  #   post_tests:
+  #     - test_name: 'DV4_SAR_2048to512_o512'
+  #       dataset:
+  #         path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel_Patch/HNM_P2048_O512_Resize512/hnm_3_gold_dataset_ratio_1_1'
+  #       reconstruction:
+  #         enabled: true
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel'
+  #         original_patch_size: 2048
+  #       evaluation_on_original:  
+  #         enabled: true  
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel_Patch/Patched_P2048_O512_BG100p/DV4_SAR_Small_v3_relabel'
+  #       draw_bounding_boxes: false
+
+  # - experiment_name: 'Segformer_2048to512_o512_small'
+  #   mode: 'train'
+  #   architecture: 'segformer_aux'
+  #   architecture_cfg:
+  #     aux_loss_weight: 0.6
+  #     in_channels: 1
+  #     hf_model_name: 'nvidia/segformer-b5-finetuned-ade-640-640'
+  #     aux_in_channels: 320
+  #   base_model: '' 
+  #   dataset:
+  #     path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel_Patch/HNM_P2048_O512_Resize512/hnm_3_gold_dataset_ratio_1_1'
+  #   imgsz: 512
+  #   train:
+  #     epochs: 800
+  #     imgsz: 512
+  #     batch_size: 8
+  #     workers: 4
+  #     patience:  50
+  #     lr0: 0.0001      
+  #     amp: True        
+  #     degrees: 10
+  #     translate: 0.1
+  #     scale: 0
+  #     fliplr: 0.5
+  #     flipud: 0.5
+  #     gradient_accumulation_steps: 4
+  #   post_tests:
+  #     - test_name: 'DV4_SAR_2048to512_o512'
+  #       dataset:
+  #         path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel_Patch/HNM_P2048_O512_Resize512/hnm_3_gold_dataset_ratio_1_1'
+  #       reconstruction:
+  #         enabled: true
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel'
+  #         original_patch_size: 2048
+  #       evaluation_on_original: 
+  #         enabled: true  
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel_Patch/Patched_P2048_O512_BG100p/DV4_SAR_Small_v3_relabel'
+  #       draw_bounding_boxes: false
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  # - experiment_name: 'YOLOv11_2048to512_o512_big'
+  #   mode: 'train'
+  #   architecture: 'yolo'
+  #   base_model: '/home/yuan/.conda/envs/yuan_env_cuda12-4/lib/python3.10/site-packages/ultralytics/cfg/models/11/yolo11-seg.yaml' 
+  #   dataset:
+  #     path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Big_Patch/Patched_P2048_O512_BG100p/DV4_SAR_Big_Resize512'
+  #   imgsz: 512
+  #   train:
+  #     epochs: 800
+  #     imgsz: 512
+  #     batch_size: 128
+  #     workers: 4
+  #     amp: True
+  #     patience: 100
+  #     lr0: 0.01
+  #     lrf: 0.0001
+  #     mosaic: 0
+  #     degrees: 20
+  #     translate: 0.1
+  #     scale: 0
+  #     dropout: 0.1
+  #     fliplr: 0.5
+  #     flipud: 0.5
+  #   post_tests:
+  #     - test_name: 'DV4_SAR_2048to512_o512'
+  #       dataset:
+  #         path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Big_Patch/Patched_P2048_O512_BG100p/DV4_SAR_Big_Resize512'
+  #       reconstruction:
+  #         enabled: true
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Big'
+  #         original_patch_size: 2048
+  #       evaluation_on_original:  
+  #         enabled: true  
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Big_Patch/Patched_P2048_O512_BG100p/DV4_SAR_Big'
+
+  # - experiment_name: 'YOLOv12_2048to512_o512_big'
+  #   mode: 'train'
+  #   architecture: 'yolo'
+  #   base_model: '/home/yuan/.conda/envs/yuan_env_cuda12-4/lib/python3.10/site-packages/ultralytics/cfg/models/12/yolo12-seg.yaml' 
+  #   dataset:
+  #     path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Big_Patch/Patched_P2048_O512_BG100p/DV4_SAR_Big_Resize512'
+  #   imgsz: 512
+  #   train:
+  #     epochs: 800
+  #     imgsz: 512
+  #     batch_size: 128
+  #     workers: 4
+  #     amp: True
+  #     patience: 100
+  #     lr0: 0.01
+  #     lrf: 0.0001
+  #     mosaic: 0
+  #     degrees: 20
+  #     translate: 0.1
+  #     scale: 0
+  #     dropout: 0.1
+  #     fliplr: 0.5
+  #     flipud: 0.5
+  #   post_tests:
+  #     - test_name: 'DV4_SAR_2048to512_o512'
+  #       dataset:
+  #         path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Big_Patch/Patched_P2048_O512_BG100p/DV4_SAR_Big_Resize512'
+  #       reconstruction:
+  #         enabled: true
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Big'
+  #         original_patch_size: 2048
+  #       evaluation_on_original:  
+  #         enabled: true  
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Big_Patch/Patched_P2048_O512_BG100p/DV4_SAR_Big'
+
+  # - experiment_name: 'DeepLab_2048to512_o512_big'
+  #   mode: 'train'
+  #   architecture: 'deeplabv3+'
+  #   architecture_cfg:
+  #     in_channels: 1
+  #   # 從頭開始訓練 (或使用 TorchVision 預訓練權重，取決於您的 adapter 設定)
+  #   base_model: '' 
+  #   dataset:
+  #     path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Big_Patch/Patched_P2048_O512_BG100p/DV4_SAR_Big_Resize512'
+  #   imgsz: 512
+  #   train:
+  #     epochs: 800
+  #     imgsz: 512
+  #     workers: 4
+  #     batch_size: 28
+  #     patience: 100
+  #     lr0: 0.0001      
+  #     amp: True        
+  #     degrees: 20
+  #     translate: 0.1
+  #     scale: 0
+  #     fliplr: 0.5
+  #     flipud: 0.5
+  #     # # --- [修改] 像素級擴增 (只保留雜訊) ---
+  #     # # random_brightness_contrast: 0.3  # <-- 刪除或註解掉這一行
+  #     # gauss_noise: 0.1                # <-- 保留，用於增加魯棒性
+  #     # coarse_dropout: 0.1              # <-- 保留，強迫學習部分特徵
+  #     # # --- [修改] 彈性失真 (強力推薦) ---
+  #     # elastic_transform: 0.1           # <-- 強力推薦保留
+  #     gradient_accumulation_steps: 4
+  #   post_tests:
+  #     - test_name: 'DV4_SAR_2048to512_o512'
+  #       dataset:
+  #         path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Big_Patch/Patched_P2048_O512_BG100p/DV4_SAR_Big_Resize512'
+  #       reconstruction:
+  #         enabled: true
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Big'
+  #         original_patch_size: 2048
+  #       evaluation_on_original:  
+  #         enabled: true  
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Big_Patch/Patched_P2048_O512_BG100p/DV4_SAR_Big'
+  #       draw_bounding_boxes: false
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  - experiment_name: 'RS3Mamba_2048to512_o512_small'
+    mode: 'train'
+    architecture: 'rs3mamba'
+    architecture_cfg:
+      in_channels: 3          # 支援單通道 SAR
+      pretrained_vmamba: 'weights/vmamba_tiny_e292.pth' # 預訓練權重路徑
+    base_model: '' 
+    dataset:
+      path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel_Patch/HNM_P2048_O512_Resize512/hnm_3_gold_dataset_ratio_1_1'
+    imgsz: 512
+    train:
+      epochs: 800
+      imgsz: 512
+      batch_size: 12
+      workers: 2 ######### 4
+      patience:  70
+      lr0: 0.0001      
+      amp: True        
+      degrees: 20
+      translate: 0.1
+      scale: 0
+      fliplr: 0.5
+      flipud: 0.5
+      # # --- [修改] 像素級擴增 (只保留雜訊) ---
+      # # random_brightness_contrast: 0.3  # <-- 刪除或註解掉這一行
+      # gauss_noise: 0.1                 # <-- 保留，用於增加魯棒性
+      # coarse_dropout: 0.1             # <-- 保留，強迫學習部分特徵
+      # # --- [修改] 彈性失真 (強力推薦) ---
+      # elastic_transform: 0.1           # <-- 強力推薦保留
+      gradient_accumulation_steps: 4
+    post_tests:
+      - test_name: 'DV4_SAR_2048to512_o512'
+        dataset:
+          path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel_Patch/HNM_P2048_O512_Resize512/hnm_3_gold_dataset_ratio_1_1'
+        reconstruction:
+          enabled: true
+          original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel'
+          original_patch_size: 2048
+        evaluation_on_original: 
+          enabled: true  
+          original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel_Patch/Patched_P2048_O512_BG100p/DV4_SAR_Small_v3_relabel'
+        draw_bounding_boxes: false
+
+
+
+  - experiment_name: 'RS3Mamba_1024to512_o512_small'
+    mode: 'train'
+    architecture: 'rs3mamba'
+    architecture_cfg:
+      in_channels: 3          # 支援單通道 SAR
+      pretrained_vmamba: 'weights/vmamba_tiny_e292.pth' # 預訓練權重路徑
+    base_model: '' 
+    dataset:
+      path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel_Patch/HNM_P1024_O512_Resize512/hnm_3_gold_dataset_ratio_1_1'
+    imgsz: 512
+    train:
+      epochs: 800
+      imgsz: 512
+      batch_size: 12
+      workers: 2 ######### 4
+      patience:  70
+      lr0: 0.0001      
+      amp: True        
+      degrees: 20
+      translate: 0.1
+      scale: 0
+      fliplr: 0.5
+      flipud: 0.5
+      # # --- [修改] 像素級擴增 (只保留雜訊) ---
+      # # random_brightness_contrast: 0.3  # <-- 刪除或註解掉這一行
+      # gauss_noise: 0.1                 # <-- 保留，用於增加魯棒性
+      # coarse_dropout: 0.1             # <-- 保留，強迫學習部分特徵
+      # # --- [修改] 彈性失真 (強力推薦) ---
+      # elastic_transform: 0.1           # <-- 強力推薦保留
+      gradient_accumulation_steps: 4
+    post_tests:
+      - test_name: 'DV4_SAR_1024to512_o512'
+        dataset:
+          path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel_Patch/HNM_P1024_O512_Resize512/hnm_3_gold_dataset_ratio_1_1'
+        reconstruction:
+          enabled: true
+          original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel'
+          original_patch_size: 1024
+        evaluation_on_original: 
+          enabled: true  
+          original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel_Patch/Patched_P1024_O512_BG100p'
+        draw_bounding_boxes: false
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  # - experiment_name: 'Test_YOLOv11_2048to512'
+  #   mode: 'test'
+  #   architecture: 'yolo'
+  #   base_model: '/home/yuan/Oil_Project_10-8/result_model/zenodo_vv_vh/20251010-051048_YOLO_512/weights/best.pt' 
+  #   imgsz: 512
+  #   post_tests:
+  #     - test_name: 'DV4_SAR_2048to512'
+  #       dataset:
+  #         path: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh_resize512'
+  #       reconstruction:
+  #         enabled: false
+  #       evaluation_on_original:  
+  #         enabled: true  
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh'
+  #       draw_bounding_boxes: false
+
+  # - experiment_name: 'Test_YOLOv12_2048to512'
+  #   mode: 'test'
+  #   architecture: 'yolo'
+  #   base_model: '/home/yuan/Oil_Project_10-8/result_model/DV4_big_small/20251117-011751_YOLOv12_2048to512_o512_smail_hnm_v2/weights/best.pt' 
+  #   imgsz: 512
+  #   post_tests:
+  #     - test_name: 'DV4_SAR_2048to512'
+  #       dataset:
+  #         path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v2_Patch/Patched_P2048_O512_BG100p_Separated/HNM_P2048_O512_Resize512/hnm_3_gold_dataset'
+  #       reconstruction:
+  #         enabled: false
+  #       evaluation_on_original:  
+  #         enabled: true  
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v2_Patch/Patched_P2048_O512_BG100p/DV4_SAR_Small_v2'
+  #       draw_bounding_boxes: false
+
+  # - experiment_name: 'Test_DeepLab_2048to512'
+  #   mode: 'test'
+  #   architecture: 'deeplabv3+'
+  #   architecture_cfg:
+  #     in_channels: 3
+  #   # 從頭開始訓練 (或使用 TorchVision 預訓練權重，取決於您的 adapter 設定)
+  #   base_model: '/home/yuan/Oil_Project_10-8/result_model/zenodo_vv_vh/20251010-163408_DeepLab_512/weights/best.pt' 
+  #   imgsz: 512
+  #   post_tests:
+  #     - test_name: 'DV4_SAR_2048to512'
+  #       dataset:
+  #         path: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh_resize512'
+  #       reconstruction:
+  #         enabled: false
+  #       evaluation_on_original:  
+  #         enabled: true  
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh'
+  #       draw_bounding_boxes: false
+
+  # - experiment_name: 'Test_Segformer_1024to512'
+  #   mode: 'test'
+  #   architecture: 'segformer_aux'
+  #   architecture_cfg:
+  #     aux_loss_weight: 0.6
+  #     in_channels: 3
+  #     # hf_model_name: 'nvidia/segformer-b5-finetuned-ade-640-640'
+  #     # aux_in_channels: 320
+  #   base_model: '/home/yuan/Oil_Project_10-8/result_model/zenodo_vv_vh/20251012-073526_SegFormer_B0_with_Aux_Loss_512/weights/best.pt' 
+  #   imgsz: 512
+  #   post_tests:
+  #     - test_name: 'Segformer_2048to512'
+  #       dataset:
+  #         path: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh_resize512'
+  #       reconstruction:
+  #         enabled: false
+  #       evaluation_on_original:  
+  #         enabled: true  
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/dataset_zenodo/zenodo_vv_vh'
+  #       draw_bounding_boxes: false
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  # - experiment_name: 'SegNeXt_UNet_test'
+  #   mode: 'train'
+  #   # 1. 使用新的 architecture 名稱
+  #   architecture: 'segnext'
+  #   base_model: '' 
+  #   architecture_cfg:
+  #     # 選項: 'mscan_t', 'mscan_s', 'mscan_b', 'mscan_l'
+  #     encoder_name: 'mscan_b'
+  #     # 選擇權重
+  #     # encoder_weights: 'imagenet'
+  #     # 5. (可選) 支援多通道
+  #     in_channels: 1 
+  #   dataset:
+  #     path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/Dv4_SAR_Patch/Patched_P2048_O0_BG100p_Resize512/Dv4_SAR'
+  #   train:
+  #     epochs: 2
+  #     imgsz: 512
+  #     batch_size: 16
+  #     workers: 4
+  #     patience: 25
+  #     lr0: 0.0001      
+  #     amp: True        
+  #     degrees: 10
+  #     translate: 0.1
+  #     scale: 0
+  #     fliplr: 0.5
+  #     flipud: 0.5
+  #     gradient_accumulation_steps: 1
+  #   post_tests:
+  #     - test_name: 'zenodo'
+  #       dataset:
+  #         path: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/Dv4_SAR_Patch/Patched_P2048_O0_BG100p_Resize512/Dv4_SAR'
+  #       reconstruction:
+  #         enabled: true
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/Dv4_SAR'
+  #       evaluation_on_original: 
+  #         enabled: true  
+  #         original_data_root: '/home/yuan/Oil_Project_10-8/dataset/datasetv4/Dv4_SAR'
+  #       draw_bounding_boxes: false
+
+
+
+
+
+
+
+
+
