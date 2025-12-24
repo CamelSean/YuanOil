@@ -207,6 +207,5 @@ if __name__ == '__main__':
     # 為了讓動態導入 `adapters` 正常工作，需要從專案的根目錄來執行
     # 例如: `export PYTHONPATH=$PYTHONPATH:/path/to/your/OIL_PROJECT`
     # 然後執行: `python -m OIL_PROJECT.code_10_7.main.main_runner`
-    # export PYTHONPATH=$PYTHONPATH:/home/yuan && nohup /home/yuan/.conda/envs/yuan_env_cuda12-4/bin/python -u -m Oil_Project_10-8.main.main_runner > /home/yuan/Oil_Project_10-8/runner.log 2>&1 &
-    # export PYTHONPATH=$PYTHONPATH:/home/yuan && nohup /home/yuan/.conda/envs/mmseg_yuan/bin/python -u -m Oil_Project_10-8.main.main_runner > /home/yuan/Oil_Project_10-8/runner.log 2>&1 &
+    # export PYTHONPATH=$PYTHONPATH:$(pwd) && nohup /home/sean/.conda/envs/YuansCode/bin/python -u -m main.main_runner > runner.log 2>&1 &
     main()
