@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+*.pth
+*.pt
+*.ckpt
+*.log
+dataset/
+result_excel/
+result_model/
