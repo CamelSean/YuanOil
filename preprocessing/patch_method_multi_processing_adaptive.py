@@ -21,8 +21,8 @@ Image.MAX_IMAGE_PIXELS = None
 NUM_WORKERS = None 
 
 # --- 來源與輸出設定 ---
-SOURCE_BASE_DIR = "/home/yuan/Oil_Project_10-8/dataset/datasetv4"
-OUTPUT_BASE_DIR = "/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_Small_v3_relabel_Patch"
+SOURCE_BASE_DIR = "/home/sean/oil_11_26/dataset"
+OUTPUT_BASE_DIR = "/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/DV4_SAR_Small_v3_relabel_2048_Patch"
 CATEGORIES = ["DV4_SAR_Small_v3_relabel"]
 SPLITS = ["train", "val", "test"]
 
