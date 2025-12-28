@@ -8,6 +8,19 @@ import shutil
 
 from .reconstruction_module import run_reconstruction_evaluation, calculate_iou
 from .training_module import get_model_adapter
+# 確保在檔案頂部引入
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
+from .gradcam_utils import GradCAM, apply_colormap_on_image, compute_input_saliency
+
+import cv2
+import numpy as np
+import pandas as pd
+from scipy.spatial.distance import directed_hausdorff
+from pathlib import Path
+import torch
+
+
 
 def _get_gt_mask(label_path_base, h, w, architecture):
     """
@@ -386,3 +399,179 @@ def evaluate_and_visualize(exp_config, data_yaml_path, model_path, results_path)
     except Exception as e:
         print(f"[Error] An error occurred during evaluation: {e}"); import traceback; traceback.print_exc()
         return {"error": str(e)}
+    
+
+
+
+def calculate_single_image_advanced_metrics(pred_mask, gt_mask):
+    """
+    計算單張影像的 HD95、漏報數、誤報數
+    """
+    # 確保轉為 0/1 的 uint8
+    pred_bin = (pred_mask > 0).astype(np.uint8)
+    gt_bin = (gt_mask > 0).astype(np.uint8)
+
+    # --- 1. 計算 HD95 ---
+    if np.sum(pred_bin) == 0 and np.sum(gt_bin) == 0:
+        hd95 = 0.0
+    elif np.sum(pred_bin) == 0 or np.sum(gt_bin) == 0:
+        # 一方有值一方全空，給予懲罰 (例如對角線長度，這裡簡化設為 100 或更大)
+        hd95 = 100.0 
+    else:
+        pred_pts = np.argwhere(pred_bin)
+        gt_pts = np.argwhere(gt_bin)
+        d1 = directed_hausdorff(pred_pts, gt_pts)[0]
+        d2 = directed_hausdorff(gt_pts, pred_pts)[0]
+        hd95 = max(d1, d2)
+
+    # --- 2. 物件級統計 (Object-Level) ---
+    # 連通物件分析 (8-connectivity)
+    n_gt, labels_gt = cv2.connectedComponents(gt_bin, connectivity=8)
+    n_pred, labels_pred = cv2.connectedComponents(pred_bin, connectivity=8)
+    
+    # 扣掉背景 0
+    gt_obj_count = n_gt - 1
+    pred_obj_count = n_pred - 1
+    
+    missed = 0
+    false_alarm = 0
+    
+    # 計算漏報 (Missed): GT 物件沒被 Pred 覆蓋
+    for i in range(1, n_gt):
+        gt_obj_mask = (labels_gt == i)
+        if np.sum(np.logical_and(gt_obj_mask, pred_bin)) == 0:
+            missed += 1
+            
+    # 計算誤報 (False Alarm): Pred 物件沒碰到 GT
+    for i in range(1, n_pred):
+        pred_obj_mask = (labels_pred == i)
+        if np.sum(np.logical_and(pred_obj_mask, gt_bin)) == 0:
+            false_alarm += 1
+            
+    return {
+        'HD95': hd95,
+        'GT_Count': gt_obj_count,
+        'Pred_Count': pred_obj_count,
+        'Missed': missed,
+        'False_Alarm': false_alarm
+    }
+
+def run_advanced_evaluation(model_adapter, dataset_config, save_dir, imgsz=512, gradcam_config=None):
+    """
+    [修正版] 支援 Patch-level Grad-CAM 與 Input Saliency 分析
+    """
+    print(f"\n[Advanced Eval] 正在進行 Patch-level 進階評估 | imgsz={imgsz}...")
+    save_dir = Path(save_dir)
+    save_dir.mkdir(parents=True, exist_ok=True)
+    
+    # --- Grad-CAM 設定 ---
+    vis_dir = None
+    gradcam_obj = None
+    enable_saliency = False
+    
+    # 預設為 False，除非 config 開啟
+    if gradcam_config and gradcam_config.get('enabled', False):
+        vis_dir = save_dir / "vis_patch_analysis"
+        vis_dir.mkdir(parents=True, exist_ok=True)
+        print(f"  [Visual Analysis] Enabled. Saving maps to {vis_dir}")
+        
+        gradcam_obj = GradCAM(model_adapter.model)
+        enable_saliency = gradcam_config.get('saliency_map', False)
+
+    # --- 資料夾設定 ---
+    dataset_root = Path(dataset_config['path'])
+    img_dir = dataset_root / 'images' / 'test'
+    lbl_dir = dataset_root / 'labels' / 'test'
+    
+    if not img_dir.exists():
+        img_dir = dataset_root / 'images' / 'val'
+        lbl_dir = dataset_root / 'labels' / 'val'
+    if not img_dir.exists(): return
+
+    image_files = sorted([f for f in img_dir.glob('*') if f.suffix.lower() in ['.png', '.jpg', '.jpeg']])
+    results = []
+    
+    # Transform (給 GradCAM 用)
+    val_transform = A.Compose([
+        A.Resize(imgsz, imgsz),
+        A.Normalize(mean=(0.417, 0.417, 0.417), std=(0.267, 0.267, 0.267)),
+        ToTensorV2()
+    ])
+
+    for idx, img_path in enumerate(image_files):
+        # 1. 預測
+        try:
+            pred_result = model_adapter.predict(str(img_path), imgsz=imgsz)
+            if isinstance(pred_result, list): pred_result = pred_result[0]
+        except:
+            pred_result = model_adapter.predict(str(img_path))
+            if isinstance(pred_result, list): pred_result = pred_result[0]
+
+        # 處理 Mask
+        if hasattr(pred_result, 'masks'):
+            pred_mask = pred_result.masks
+            if isinstance(pred_mask, torch.Tensor): pred_mask = pred_mask.cpu().numpy()
+            if pred_mask is None:
+                h, w = cv2.imread(str(img_path)).shape[:2]
+                pred_mask = np.zeros((h, w), dtype=np.uint8)
+        elif hasattr(pred_result, 'pred_mask_np'): pred_mask = pred_result.pred_mask_np
+        else: pred_mask = pred_result
+        if isinstance(pred_mask, np.ndarray) and pred_mask.ndim > 2: pred_mask = pred_mask.squeeze()
+        pred_mask = (pred_mask > 0).astype(np.uint8)
+
+        # 2. GT Mask
+        mask_path = lbl_dir / f"{img_path.stem}.png"
+        if mask_path.exists():
+            gt_mask = cv2.imread(str(mask_path), cv2.IMREAD_GRAYSCALE)
+            if gt_mask is not None and pred_mask.shape != gt_mask.shape:
+                gt_mask = cv2.resize(gt_mask, (pred_mask.shape[1], pred_mask.shape[0]), interpolation=cv2.INTER_NEAREST)
+            if gt_mask is None: gt_mask = np.zeros_like(pred_mask)
+            gt_mask = (gt_mask > 0).astype(np.uint8)
+        else: gt_mask = np.zeros_like(pred_mask)
+
+        # 3. 指標計算 (需確保 calculate_single_image_advanced_metrics 已導入)
+        try:
+            # 這裡假設 calculate_single_image_advanced_metrics 已在檔案中定義或導入
+            metrics = calculate_single_image_advanced_metrics(pred_mask, gt_mask)
+            results.append({'filename': img_path.name, **metrics})
+        except NameError:
+             pass # 如果同檔案沒定義該函式
+
+        # --- [視覺化] Grad-CAM & Saliency Map ---
+        if vis_dir:
+            img_bgr = cv2.imread(str(img_path))
+            if img_bgr is not None:
+                img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+                input_tensor = val_transform(image=img_rgb)['image'].unsqueeze(0).to(model_adapter.device)
+                
+                # A. 標準 Grad-CAM
+                cam_map = gradcam_obj.generate_cam(input_tensor)
+                vis_cam = apply_colormap_on_image(img_bgr, cam_map)
+                cv2.imwrite(str(vis_dir / f"{img_path.stem}_GradCAM.png"), vis_cam)
+                
+                # B. Input Saliency Map (RGB 通道)
+                if enable_saliency:
+                    saliency_maps = compute_input_saliency(model_adapter.model, input_tensor)
+                    for c_idx in range(min(3, saliency_maps.shape[0])): # 最多存前3個通道
+                        s_map = saliency_maps[c_idx]
+                        if s_map.shape != img_bgr.shape[:2]:
+                            s_map = cv2.resize(s_map, (img_bgr.shape[1], img_bgr.shape[0]))
+                        
+                        s_vis = (s_map * 255).astype(np.uint8)
+                        s_vis = cv2.applyColorMap(s_vis, cv2.COLORMAP_JET)
+                        cv2.imwrite(str(vis_dir / f"{img_path.stem}_Saliency_CH{c_idx}.png"), s_vis)
+        # --------------------------------------
+
+        if (idx+1) % 50 == 0: print(f"   已處理 {idx+1}/{len(image_files)} 張...")
+
+    if results:
+        df = pd.DataFrame(results)
+        summary = {}
+        for col in df.columns:
+            if col == 'filename': summary[col] = 'TOTAL / AVERAGE'
+            elif col in ['HD95', 'IoU']: summary[col] = df[col].mean()
+            elif col in ['GT_Count', 'Pred_Count', 'Missed', 'False_Alarm']: summary[col] = df[col].sum()
+            elif pd.api.types.is_numeric_dtype(df[col]): summary[col] = df[col].mean()
+        df = pd.concat([df, pd.DataFrame([summary])], ignore_index=True)
+        df.to_excel(save_dir / "Advanced_Analysis.xlsx", index=False)
+        print(f"[Advanced Eval] 完成。")

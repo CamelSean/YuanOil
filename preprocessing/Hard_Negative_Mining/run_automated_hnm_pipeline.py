@@ -27,10 +27,10 @@ import matplotlib.pyplot as plt
 # --- ⭐⭐⭐ 全域設定 (您唯一需要修改的地方) ⭐⭐⭐ ---
 
 # 1. 基礎資料夾設定
-SOURCE_PATCH_DIR = Path("/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_BIG_v3_relabel_Patch/Patched_P1024_O512_BG100p_Separated/DV4_SAR_BIG_v3_relabel_resize512")
+SOURCE_PATCH_DIR = Path("/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/03_Training_Ready_512/VV_1Ch_2048_Resize_512_Separated")
 
 # 2. HNM 流程輸出根目錄
-HNM_PIPELINE_BASE_DIR = Path("/home/yuan/Oil_Project_10-8/dataset/datasetv4/DV4_SAR_BIG_v3_relabel_Patch/HNM_P1024_O512_Resize512")
+HNM_PIPELINE_BASE_DIR = Path("/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_2048_HNM")
 
 # 3. 階段 1：分類器訓練設定
 CLASSIFIER_MODEL_NAME = 'mobilenetv3_small_100' 
@@ -48,7 +48,8 @@ HARD_NEGATIVE_THRESHOLD = 0.5   # Prob >= 0.5   -> Hard (全部保留)
 MEDIUM_NEGATIVE_THRESHOLD = 0.1 # Prob >= 0.1   -> Medium
 
 # 5. 階段 3：黃金資料集組裝設定 (多重比例)
-TARGET_RATIOS = [1, 2, 3] 
+# TARGET_RATIOS = [1, 2, 3]
+TARGET_RATIOS = [1.5] 
 
 REMAINING_FILL_RATIO = {
     'medium': 0.7,  

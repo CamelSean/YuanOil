@@ -20,12 +20,6 @@ Image.MAX_IMAGE_PIXELS = None
 # None 表示使用所有可用的核心
 NUM_WORKERS = None 
 
-# --- 來源與輸出設定 ---
-SOURCE_BASE_DIR = "/home/sean/oil_11_26/dataset"
-OUTPUT_BASE_DIR = "/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/DV4_SAR_Small_v3_relabel_2048_Patch"
-CATEGORIES = ["DV4_SAR_Small_v3_relabel"]
-SPLITS = ["train", "val", "test"]
-
 # --- Patching 參數設定 ---
 PATCH_SIZE = 2048
 
@@ -39,12 +33,23 @@ OVERLAP_TEST = 512
 
 RANDOM_SEED = 42
 
+# --- 功能開關 ---
+SEPARATE_OUTPUT = True  # 是否將正負樣本分開存放 (True: 分開, False: 混合)
+
+# --- 來源與輸出設定 ---
+SOURCE_BASE_DIR = "/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source"
+_base_output_path = f"/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/02_Patched_HighRes/VV_1Ch_Patch_{PATCH_SIZE}"
+CATEGORIES = ["."]  # 可設定多個類別，例如 ["category1", "category2", "category3"]
+SPLITS = ["train", "val", "test"]
+
+if SEPARATE_OUTPUT:
+    OUTPUT_BASE_DIR = f"{_base_output_path}_Separated"  #若分開存放，則在路徑後加上 _Separated
+else:
+    OUTPUT_BASE_DIR = _base_output_path                 #直接把_base_output_path用作輸出路徑
+
 # --- 背景樣本保留比例設定 ---
 # (僅作用於 Train/Val 的背景樣本)
-BACKGROUND_KEEP_RATIO = 1
-
-# --- 功能開關 ---
-SEPARATE_OUTPUT = False 
+BACKGROUND_KEEP_RATIO = 1 
  
 # --- PNG 轉 TXT 參數設定 ---
 TXT_GENERATION_PARAMS = {
@@ -249,11 +254,16 @@ def process_single_image(job_args):
 def main():
     random.seed(RANDOM_SEED)
     
+    # --- 原本的寫法 (會亂加名字) ---
     # [v1.5] 更新輸出資料夾命名，包含兩個 Overlap
-    output_dir_name = f"Patched_P{PATCH_SIZE}_Hybrid_TrainO{OVERLAP_TRAIN_VAL}_TestO{OVERLAP_TEST}_BG{int(BACKGROUND_KEEP_RATIO*100)}p"
-    if SEPARATE_OUTPUT:
-        output_dir_name += "_Separated"
-    main_output_path = os.path.join(OUTPUT_BASE_DIR, output_dir_name)
+    # output_dir_name = f"Patched_P{PATCH_SIZE}_Hybrid_TrainO{OVERLAP_TRAIN_VAL}_TestO{OVERLAP_TEST}_BG{int(BACKGROUND_KEEP_RATIO*100)}p"
+    # if SEPARATE_OUTPUT:
+    #     output_dir_name += "_Separated"
+    # main_output_path = os.path.join(OUTPUT_BASE_DIR, output_dir_name)
+    
+    # --- [修改後] 直接使用您指定的 OUTPUT_BASE_DIR ---
+    main_output_path = OUTPUT_BASE_DIR 
+    # 這樣設定後，您在外面設 ".../02_Patched_HighRes/RGB_Patch_1024"，它就會直接存進去，不會再多一層資料夾。
     
     print(f"所有 patch 後的資料將儲存到: {main_output_path}")
     print(f"模式: 雙軌策略 (Hybrid Strategy) [v1.5]")

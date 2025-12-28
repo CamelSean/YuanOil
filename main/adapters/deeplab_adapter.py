@@ -423,7 +423,7 @@ class DeepLabAdapter(nn.Module):
         df.to_csv(results_path / 'training_log.csv', index=False)
         print(f"  - [Info] Final plots and logs saved to {results_path}")
 
-        return {'best_model_path': str(best_model_path)}
+        return {'best_model_path': str(best_model_path), 'best_val_score': best_iou}
     
     def _save_training_results(self, results_path, history):
         """將訓練歷史記錄儲存為 CSV 和 PNG 圖表。"""

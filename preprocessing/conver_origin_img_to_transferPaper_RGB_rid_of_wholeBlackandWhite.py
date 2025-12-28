@@ -9,8 +9,8 @@ from pathlib import Path
 # ================= 設定區域 =================
 os.environ["OPENCV_IO_MAX_IMAGE_PIXELS"] = str(pow(2, 40))
 
-INPUT_ROOT = r"/home/yuan/Yuan/OIL_Project_12_7/dataset/DV4_SAR_Small_v3_relabel"
-OUTPUT_ROOT = r"/home/yuan/Yuan/OIL_Project_12_7/dataset/DV4_SAR_Small_v3_relabel_TransferPaperRGB_Fix"
+INPUT_ROOT = r"/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source"
+OUTPUT_ROOT = r"/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/01_Feature_Engineering/Pseudo_RGB_Full"
 
 TILE_SIZE = 2048
 

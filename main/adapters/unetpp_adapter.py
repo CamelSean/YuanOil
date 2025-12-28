@@ -334,7 +334,7 @@ class UnetPPAdapter(nn.Module):
         df.to_csv(results_path / 'training_log.csv', index=False)
         print(f"  - [Info] Final plots and logs saved to {results_path}")
         
-        return {'best_model_path': str(best_model_path)}
+        return {'best_model_path': str(best_model_path), 'best_val_score': best_iou}
 
     def predict(self, source, imgsz, **kwargs):
         original_image = cv2.imread(str(source))

@@ -52,7 +52,7 @@ class YoloAdapter:
         # YOLO 訓練完成後，最佳模型會儲存在 results_path/weights/best.pt
         best_model_path = results_path / 'weights' / 'best.pt'
         
-        return {'best_model_path': str(best_model_path)}
+        return {'best_model_path': str(best_model_path), 'best_val_score': best_iou}
 
     def predict(self, source, **predict_params):
         """

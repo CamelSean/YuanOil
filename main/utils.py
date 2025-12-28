@@ -43,3 +43,4 @@ def get_image_counts(dataset_config, yaml_parent_dir):
     except Exception as e:
         print(f" 計算圖片數量時出錯: {e}")
         return {'train_count': -1, 'val_count': -1, 'test_count': -1}
+

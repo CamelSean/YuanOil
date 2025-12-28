@@ -126,8 +126,8 @@ def analyze_and_prepare_dataset(input_dir: Path, output_dir: Path, target_size: 
 if __name__ == "__main__":
     # --- 在這裡設定預設路徑 ---
     # 如果不想每次都從命令列輸入，可以直接在這裡修改
-    DEFAULT_INPUT_DIR = '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/DV4_SAR_Small_v3_relabel_2048_Patch/Patched_P2048_Hybrid_TrainO512_TestO512_BG100p/DV4_SAR_Small_v3_relabel' # "/path/to/your/original_dataset"
-    DEFAULT_OUTPUT_DIR = '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/DV4_SAR_Small_v3_relabel_2048_Patch/Patched_P2048_Hybrid_TrainO512_TestO512_BG100p/DV4_SAR_Small_v3_relabel_resize512' # "/path/to/your/processed_dataset"
+    DEFAULT_INPUT_DIR = '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/02_Patched_HighRes/VV_1Ch_Patch_2048_Separated' # "/path/to/your/original_dataset"
+    DEFAULT_OUTPUT_DIR = '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/03_Training_Ready_512/VV_1Ch_2048_Resize_512_Separated' # "/path/to/your/processed_dataset"
     # -------------------------
 
     parser = argparse.ArgumentParser(

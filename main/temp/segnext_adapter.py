@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 # 導入 smp 只是為了使用它的 loss function
 import segmentation_models_pytorch as smp
 import timm
-# import mmseg.models.backbones.mscan
+import mmseg.models.backbones.mscan
 
 # 確保 timm 可用
 assert timm.__version__ is not None, "timm library is not installed. Please run 'pip install timm'"
@@ -451,7 +451,7 @@ class SegNeXtAdapter(nn.Module):
         else:
             print("  - [Warning] No history recorded, skipping final plot generation.")
 
-        return {'best_model_path': str(best_model_path), 'best_val_score': best_iou}
+        return {'best_model_path': str(best_model_path)}
 
     def predict(self, source, imgsz, **kwargs):
         original_image = cv2.imread(str(source))

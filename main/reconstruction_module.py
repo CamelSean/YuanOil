@@ -2,15 +2,19 @@
 # ===           main/reconstruction_module.py (v1.1)            ===
 # ===  (已修正 Bug: 不應對 adapter 傳來的 mask 重複使用 sigmoid)  ===
 # ===================================================================
+
 import torch
 import torch.nn as nn
 import numpy as np
 import cv2
+import pandas as pd
 from pathlib import Path
 from collections import defaultdict
 import re
 from tqdm import tqdm
 from torchvision.ops import nms
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
 
 def stitch_masks(patch_predictions_with_scores, original_size, architecture):
     """
@@ -42,22 +46,18 @@ def stitch_masks(patch_predictions_with_scores, original_size, architecture):
                 mask_np = mask_np.squeeze(0)
             
             h, w = mask_np.shape
-
             # 邊界檢查
             h_valid = min(h, canvas_h - y)
             w_valid = min(w, canvas_w - x)
-
             if h_valid <= 0 or w_valid <= 0:
                 continue
 
             mask_valid = mask_np[0:h_valid, 0:w_valid]
-            
             stitched_canvas[y : y + h_valid, x : x + w_valid] += mask_valid * score
             weight_map[y : y + h_valid, x : x + w_valid] += score
             
     safe_weight_map = weight_map.copy()
     safe_weight_map[safe_weight_map == 0] = 1
-    
     final_mask_prob = stitched_canvas / safe_weight_map
     
     # 最終決定：在所有機率都平均完畢後，才進行 0.5 閾值判斷
@@ -313,3 +313,169 @@ def run_reconstruction_evaluation(model_adapter, test_image_dir, original_data_r
         "reconstruction_iou_bg": f"{iou_bg:.4f}",        # 新增
         "reconstruction_mean_iou": f"{mean_iou:.4f}"     # 現在這是真正的 mIoU
     }
+
+
+def run_reconstruction_pipeline(model_adapter, dataset_config, save_dir, gradcam_config=None, reconstruction_config=None, explicit_original_root=None):
+    """
+    [V6.0 純淨版] 
+    - 移除所有標準 Overlay 生成 (因為 run_reconstruction_evaluation 已做)。
+    - 僅生成 vis_reconstruction_gradcam。
+    - 使用與 Evaluation 完全相同的 Regex 與路徑邏輯，確保圖片位置正確。
+    """
+    if not gradcam_config or not gradcam_config.get('enabled', False):
+        return # 如果沒開 Grad-CAM，這個函式現在沒事可做，直接返回
+
+    print("\n[Reconstruction] 開始執行 Grad-CAM 重建 (V6.0)...")
+    save_dir = Path(save_dir)
+    
+    vis_grad_dir = save_dir / "vis_reconstruction_gradcam"
+    vis_grad_dir.mkdir(parents=True, exist_ok=True)
+    print(f"  [Info] Saving Grad-CAM outputs to: {vis_grad_dir}")
+
+    # 初始化 Grad-CAM
+    try:
+        from .gradcam_utils import GradCAM, compute_input_saliency
+        gradcam_obj = GradCAM(model_adapter.model)
+        enable_saliency = gradcam_config.get('saliency_map', False)
+    except ImportError: return
+
+    # --- 1. 準備路徑 (與 Evaluation 對齊) ---
+    dataset_path = Path(dataset_config['path'])
+    test_img_dir = dataset_path / 'images' / 'test'
+    if not test_img_dir.exists():
+        test_img_dir = dataset_path / 'images' / 'val'
+    if not test_img_dir.exists(): return
+
+    # --- 2. 準備 Original Dataset 路徑 ---
+    orig_img_root = None
+    if explicit_original_root:
+        orig_img_root = Path(explicit_original_root) / 'images' / 'test'
+        if not orig_img_root.exists():
+            # 嘗試其它結構
+            orig_img_root = Path(explicit_original_root) / 'images'
+            if not orig_img_root.exists():
+                orig_img_root = Path(explicit_original_root)
+
+    if not orig_img_root or not orig_img_root.exists():
+        print("  [Error] Cannot find original images root for Grad-CAM. Skipping.")
+        return
+
+    # --- 3. 掃描 Patch (使用與 Evaluation 完全相同的邏輯) ---
+    all_patch_files = sorted(list(test_img_dir.glob('*.jpg')) + list(test_img_dir.glob('*.png')))
+    patches_by_scene = defaultdict(list)
+    
+    for p_file in all_patch_files:
+        # [關鍵] 使用與 Evaluation 一致的 Regex
+        match = re.match(r"(.+)_patch_x(\d+)_y(\d+)", p_file.stem)
+        if match:
+            scene_id, x, y = match.groups()
+            patches_by_scene[scene_id].append({'file': p_file, 'x': int(x), 'y': int(y)})
+    
+    if not patches_by_scene:
+        print("  [Warning] No patches matched regex for Grad-CAM.")
+        return
+
+    model_imgsz = 512
+    if hasattr(model_adapter, 'config') and 'imgsz' in model_adapter.config:
+        model_imgsz = model_adapter.config['imgsz']
+
+    # [Fix] 獲取原始 Patch 尺寸 (若有設定)
+    original_patch_size = None
+    if reconstruction_config and 'original_patch_size' in reconstruction_config:
+        original_patch_size = int(reconstruction_config['original_patch_size'])
+        print(f"  [Info] Grad-CAM Reconstruction using original_patch_size: {original_patch_size}")
+
+    # --- 4. 逐一場景重建 ---
+    for scene_id, patch_list in tqdm(patches_by_scene.items(), desc="Reconstructing Grad-CAM"):
+        
+        # 4.1 尋找原始大圖
+        orig_file = next(orig_img_root.glob(f"{scene_id}.*"), None)
+        if not orig_file: continue
+
+        temp_img = cv2.imread(str(orig_file))
+        if temp_img is None: continue
+        max_h, max_w = temp_img.shape[:2]
+
+        # 4.2 初始化畫布 (只為了 Grad-CAM)
+        full_heatmap = np.zeros((max_h, max_w), dtype=np.float32)
+        full_count_map = np.zeros((max_h, max_w), dtype=np.float32)
+        full_saliency = None
+        if enable_saliency:
+            # 預設 3 通道 RGB
+            full_saliency = np.zeros((3, max_h, max_w), dtype=np.float32)
+
+        # 4.3 處理 Patch
+        for info in patch_list:
+            p_file, x, y = info['file'], info['x'], info['y']
+            
+            patch_img_bgr = cv2.imread(str(p_file))
+            if patch_img_bgr is None: continue
+            
+            # 決定目標尺寸
+            if original_patch_size:
+                target_h, target_w = original_patch_size, original_patch_size
+            else:
+                target_h, target_w = patch_img_bgr.shape[:2]
+
+            # 邊界檢查 (使用目標尺寸)
+            h_valid = min(target_h, max_h - y)
+            w_valid = min(target_w, max_w - x)
+            if h_valid <= 0 or w_valid <= 0: continue
+
+            # 更新計數 (用於重疊平均)
+            full_count_map[y:y+h_valid, x:x+w_valid] += 1.0
+
+            # 準備輸入 Tensor
+            img_rgb = cv2.cvtColor(patch_img_bgr, cv2.COLOR_BGR2RGB)
+            val_transform = A.Compose([
+                A.Resize(model_imgsz, model_imgsz),
+                A.Normalize(mean=(0.417, 0.417, 0.417), std=(0.267, 0.267, 0.267)),
+                ToTensorV2()
+            ])
+            input_tensor = val_transform(image=img_rgb)['image'].unsqueeze(0).to(model_adapter.device)
+            
+            # (A) Global Grad-CAM
+            heatmap = gradcam_obj.generate_cam(input_tensor)
+            
+            # [Fix] 確保 heatmap 是 2D
+            if heatmap.ndim > 2:
+                heatmap = np.mean(heatmap, axis=0)
+            
+            # 放大回 Patch 目標尺寸
+            if heatmap.shape[:2] != (target_h, target_w): 
+                heatmap = cv2.resize(heatmap, (target_w, target_h), interpolation=cv2.INTER_LINEAR)
+            
+            # 裁切有效區域並疊加
+            heatmap_valid = heatmap[0:h_valid, 0:w_valid]
+            full_heatmap[y:y+h_valid, x:x+w_valid] += heatmap_valid
+            
+            # (B) RGB Saliency
+            if enable_saliency and full_saliency is not None:
+                s_maps = compute_input_saliency(model_adapter.model, input_tensor)
+                for c in range(min(3, s_maps.shape[0])):
+                    sm = s_maps[c]
+                    if sm.shape[:2] != (target_h, target_w): 
+                        sm = cv2.resize(sm, (target_w, target_h), interpolation=cv2.INTER_LINEAR)
+                    
+                    sm_valid = sm[0:h_valid, 0:w_valid]
+                    full_saliency[c, y:y+h_valid, x:x+w_valid] += sm_valid
+
+        # 4.4 正規化與存檔
+        full_count_map[full_count_map == 0] = 1.0
+        
+        # 存 Global Grad-CAM
+        full_heatmap /= full_count_map
+        vis_h = (full_heatmap * 255).astype(np.uint8)
+        vis_h = cv2.applyColorMap(vis_h, cv2.COLORMAP_JET)
+        cv2.imwrite(str(vis_grad_dir / f"{scene_id}_GradCAM.jpg"), vis_h, [int(cv2.IMWRITE_JPEG_QUALITY), 75])
+        
+        # 存 RGB Saliency
+        if enable_saliency and full_saliency is not None:
+            for c in range(3):
+                full_saliency[c] /= full_count_map
+                s_vis = (full_saliency[c] * 255).astype(np.uint8)
+                s_vis = cv2.applyColorMap(s_vis, cv2.COLORMAP_JET)
+                ch_name = ['Red', 'Green', 'Blue'][c]
+                cv2.imwrite(str(vis_grad_dir / f"{scene_id}_Saliency_CH{c}_{ch_name}.jpg"), s_vis, [int(cv2.IMWRITE_JPEG_QUALITY), 75])
+
+    print(f"[Reconstruction Grad-CAM] 完成。")

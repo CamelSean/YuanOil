@@ -184,6 +184,42 @@ class SegformerAdapter(nn.Module):
         except Exception as e:
             print(f"  - [Warning] Failed to save interim plot at epoch {epoch}: {e}")
 
+    def _get_normalization_stats(self, train_params, dataset_path):
+        """
+        獲取正規化參數 (Mean, Std)。
+        優先順序:
+        1. experiments.yaml 中的 train.normalization
+        2. 資料集目錄下的 dataset_stats.yaml
+        3. 預設值 (Hardcoded)
+        """
+        # 1. Check experiments.yaml
+        if 'normalization' in train_params:
+            norm_cfg = train_params['normalization']
+            if 'mean' in norm_cfg and 'std' in norm_cfg:
+                print(f"  - [Info] Using Normalization stats from experiments.yaml")
+                return tuple(norm_cfg['mean']), tuple(norm_cfg['std'])
+
+        # 2. Check dataset_stats.yaml
+        stats_file = Path(dataset_path) / 'dataset_stats.yaml'
+        if stats_file.exists():
+            try:
+                with open(stats_file, 'r') as f:
+                    stats = yaml.safe_load(f)
+                if 'mean' in stats and 'std' in stats:
+                    print(f"  - [Info] Using Normalization stats from {stats_file}")
+                    return tuple(stats['mean']), tuple(stats['std'])
+            except Exception as e:
+                print(f"  - [Warning] Failed to read {stats_file}: {e}")
+
+        # 3. Defaults
+        print(f"  - [Info] Using Default Normalization stats (Hardcoded)")
+        if self.in_channels == 1:
+            return (0.41733294,), (0.26790292,)
+        elif self.in_channels == 2:
+            return (0.41733294, 0.41733294), (0.26790292, 0.26790292)
+        else:
+            return (0.41733294, 0.41733294, 0.41733294), (0.26790292, 0.26790292, 0.26790292)
+
     # (使用此函式替換舊的 train 函式)
     def train(self, data, results_path, **train_params):
         from torch.cuda.amp import GradScaler
@@ -223,16 +259,8 @@ class SegformerAdapter(nn.Module):
         if not train_augmentations:
             print("  - [Info] Data Augmentation Disabled")
             
-        # --- [修改] 根據 self.in_channels 和您的新數值設定 Normalize 參數 ---
-        if self.in_channels == 1:
-            normalize_mean = (0.41733294,)
-            normalize_std = (0.26790292,)
-        elif self.in_channels == 2:
-            normalize_mean = (0.41733294, 0.41733294)
-            normalize_std = (0.26790292, 0.26790292)
-        else: # 預設 3 通道 (RGB)
-            normalize_mean = (0.41733294, 0.41733294, 0.41733294)
-            normalize_std = (0.26790292, 0.26790292, 0.26790292)
+        # --- [修改] 使用 _get_normalization_stats 獲取參數 ---
+        normalize_mean, normalize_std = self._get_normalization_stats(train_params, base_path)
         print(f"  - [Info] Using Normalize mean={normalize_mean}, std={normalize_std} for {self.in_channels} channels")
             
         train_transforms = A.Compose(train_augmentations + [
@@ -337,7 +365,7 @@ class SegformerAdapter(nn.Module):
         df.to_csv(results_path / 'training_log.csv', index=False)
         print(f"  - [Info] Final plots and logs saved to {results_path}")
 
-        return {'best_model_path': str(best_model_path)}
+        return {'best_model_path': str(best_model_path), 'best_val_score': best_iou}
 
     def predict(self, source, imgsz, **kwargs):
         original_image = cv2.imread(str(source))
