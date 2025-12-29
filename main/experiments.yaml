@@ -1,3 +1,217 @@
+# ==========================================
+# 全域設定 (Global Settings)
+# ==========================================
+# 實驗結果儲存路徑
+results_base_dir: '/home/sean/oil_11_26/result/model/DV4_HNM_CV_SegFormer_Aux'
+excel_log_path: '/home/sean/oil_11_26/result/excel_log/DV4_HNM_CV_SegFormer_Aux.xlsx'
+
+# ==========================================
+# 實驗列表 (Experiments List)
+# ==========================================
+experiments:
+
+  # ===================================================================
+  # Group 1: VV HNM 2048 (Run 1 ~ 4)
+  # ===================================================================
+  - experiment_name: 'SegFormer_B5_Aux_VV_2048_Run1'
+    mode: 'train'
+    architecture: 'segformer_aux'
+    architecture_cfg:
+      hf_model_name: 'nvidia/segformer-b5-finetuned-ade-640-640'
+      in_channels: 3
+      aux_loss_weight: 0.6
+      aux_in_channels: 320
+    cross_validation:
+      enabled: True
+      k_folds: 3
+      random_state: 42
+    dataset:
+      path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_2048/hnm_3_gold_dataset_ratio_1_1.5'
+    train: &train_defaults
+      epochs: 800
+      imgsz: 512
+      batch_size: 6
+      workers: 4
+      patience: 50
+      lr0: 0.0001
+      amp: True
+      degrees: 20
+      translate: 0.1
+      scale: 0
+      fliplr: 0.5
+      flipud: 0.5
+      gradient_accumulation_steps: 8
+    post_tests:
+      - test_name: 'Standard_Eval'
+        dataset:
+          path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_2048/hnm_3_gold_dataset_ratio_1_1.5'
+        reconstruction:
+          enabled: true
+          original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source'
+          original_patch_size: 2048
+
+  - experiment_name: 'SegFormer_B5_Aux_VV_2048_Run2'
+    mode: 'train'
+    architecture: 'segformer_aux'
+    architecture_cfg: {hf_model_name: 'nvidia/segformer-b5-finetuned-ade-640-640', in_channels: 3, aux_loss_weight: 0.6, aux_in_channels: 320}
+    cross_validation: {enabled: True, k_folds: 3, random_state: 42}
+    dataset: {path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_2048/hnm_3_gold_dataset_ratio_1_1.5'}
+    train: *train_defaults
+    post_tests:
+      - test_name: 'Standard_Eval'
+        dataset: {path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_2048/hnm_3_gold_dataset_ratio_1_1.5'}
+        reconstruction: {enabled: true, original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source', original_patch_size: 2048}
+
+  - experiment_name: 'SegFormer_B5_Aux_VV_2048_Run3'
+    mode: 'train'
+    architecture: 'segformer_aux'
+    architecture_cfg: {hf_model_name: 'nvidia/segformer-b5-finetuned-ade-640-640', in_channels: 3, aux_loss_weight: 0.6, aux_in_channels: 320}
+    cross_validation: {enabled: True, k_folds: 3, random_state: 42}
+    dataset: {path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_2048/hnm_3_gold_dataset_ratio_1_1.5'}
+    train: *train_defaults
+    post_tests:
+      - test_name: 'Standard_Eval'
+        dataset: {path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_2048/hnm_3_gold_dataset_ratio_1_1.5'}
+        reconstruction: {enabled: true, original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source', original_patch_size: 2048}
+
+  - experiment_name: 'SegFormer_B5_Aux_VV_2048_Run4'
+    mode: 'train'
+    architecture: 'segformer_aux'
+    architecture_cfg: {hf_model_name: 'nvidia/segformer-b5-finetuned-ade-640-640', in_channels: 3, aux_loss_weight: 0.6, aux_in_channels: 320}
+    cross_validation: {enabled: True, k_folds: 3, random_state: 42}
+    dataset: {path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_2048/hnm_3_gold_dataset_ratio_1_1.5'}
+    train: *train_defaults
+    post_tests:
+      - test_name: 'Standard_Eval'
+        dataset: {path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_2048/hnm_3_gold_dataset_ratio_1_1.5'}
+        reconstruction: {enabled: true, original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source', original_patch_size: 2048}
+
+  # ===================================================================
+  # Group 2: RGB HNM 2048 (Run 1 ~ 4)
+  # ===================================================================
+  - experiment_name: 'SegFormer_B5_Aux_RGB_2048_Run1'
+    mode: 'train'
+    architecture: 'segformer_aux'
+    architecture_cfg:
+      hf_model_name: 'nvidia/segformer-b5-finetuned-ade-640-640'
+      in_channels: 3
+      aux_loss_weight: 0.6
+      aux_in_channels: 320
+    cross_validation:
+      enabled: True
+      k_folds: 3
+      random_state: 42
+    dataset:
+      path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/RGB_HNM_2048/hnm_3_gold_dataset_ratio_1_1.5'
+    train: *train_defaults
+    post_tests:
+      - test_name: 'Standard_Eval'
+        dataset:
+          path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/RGB_HNM_2048/hnm_3_gold_dataset_ratio_1_1.5'
+        reconstruction:
+          enabled: true
+          original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/01_Feature_Engineering/Pseudo_RGB_Full'
+          original_patch_size: 2048
+
+  - experiment_name: 'SegFormer_B5_Aux_RGB_2048_Run2'
+    mode: 'train'
+    architecture: 'segformer_aux'
+    architecture_cfg: {hf_model_name: 'nvidia/segformer-b5-finetuned-ade-640-640', in_channels: 3, aux_loss_weight: 0.6, aux_in_channels: 320}
+    cross_validation: {enabled: True, k_folds: 3, random_state: 42}
+    dataset: {path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/RGB_HNM_2048/hnm_3_gold_dataset_ratio_1_1.5'}
+    train: *train_defaults
+    post_tests:
+      - test_name: 'Standard_Eval'
+        dataset: {path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/RGB_HNM_2048/hnm_3_gold_dataset_ratio_1_1.5'}
+        reconstruction: {enabled: true, original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/01_Feature_Engineering/Pseudo_RGB_Full', original_patch_size: 2048}
+
+  - experiment_name: 'SegFormer_B5_Aux_RGB_2048_Run3'
+    mode: 'train'
+    architecture: 'segformer_aux'
+    architecture_cfg: {hf_model_name: 'nvidia/segformer-b5-finetuned-ade-640-640', in_channels: 3, aux_loss_weight: 0.6, aux_in_channels: 320}
+    cross_validation: {enabled: True, k_folds: 3, random_state: 42}
+    dataset: {path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/RGB_HNM_2048/hnm_3_gold_dataset_ratio_1_1.5'}
+    train: *train_defaults
+    post_tests:
+      - test_name: 'Standard_Eval'
+        dataset: {path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/RGB_HNM_2048/hnm_3_gold_dataset_ratio_1_1.5'}
+        reconstruction: {enabled: true, original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/01_Feature_Engineering/Pseudo_RGB_Full', original_patch_size: 2048}
+
+  - experiment_name: 'SegFormer_B5_Aux_RGB_2048_Run4'
+    mode: 'train'
+    architecture: 'segformer_aux'
+    architecture_cfg: {hf_model_name: 'nvidia/segformer-b5-finetuned-ade-640-640', in_channels: 3, aux_loss_weight: 0.6, aux_in_channels: 320}
+    cross_validation: {enabled: True, k_folds: 3, random_state: 42}
+    dataset: {path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/RGB_HNM_2048/hnm_3_gold_dataset_ratio_1_1.5'}
+    train: *train_defaults
+    post_tests:
+      - test_name: 'Standard_Eval'
+        dataset: {path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/RGB_HNM_2048/hnm_3_gold_dataset_ratio_1_1.5'}
+        reconstruction: {enabled: true, original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/01_Feature_Engineering/Pseudo_RGB_Full', original_patch_size: 2048}
+
+  # ===================================================================
+  # Group 3: VV From RGB 2048 (Run 1 ~ 4)
+  # ===================================================================
+  - experiment_name: 'SegFormer_B5_Aux_VV_From_RGB_2048_Run1'
+    mode: 'train'
+    architecture: 'segformer_aux'
+    architecture_cfg:
+      hf_model_name: 'nvidia/segformer-b5-finetuned-ade-640-640'
+      in_channels: 3
+      aux_loss_weight: 0.6
+      aux_in_channels: 320
+    cross_validation:
+      enabled: True
+      k_folds: 3
+      random_state: 42
+    dataset:
+      path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_From_RGB_2048'
+    train: *train_defaults
+    post_tests:
+      - test_name: 'Standard_Eval'
+        dataset:
+          path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_From_RGB_2048'
+        reconstruction:
+          enabled: true
+          original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source'
+          original_patch_size: 2048
+
+  - experiment_name: 'SegFormer_B5_Aux_VV_From_RGB_2048_Run2'
+    mode: 'train'
+    architecture: 'segformer_aux'
+    architecture_cfg: {hf_model_name: 'nvidia/segformer-b5-finetuned-ade-640-640', in_channels: 3, aux_loss_weight: 0.6, aux_in_channels: 320}
+    cross_validation: {enabled: True, k_folds: 3, random_state: 42}
+    dataset: {path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_From_RGB_2048'}
+    train: *train_defaults
+    post_tests:
+      - test_name: 'Standard_Eval'
+        dataset: {path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_From_RGB_2048'}
+        reconstruction: {enabled: true, original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source', original_patch_size: 2048}
+
+  - experiment_name: 'SegFormer_B5_Aux_VV_From_RGB_2048_Run3'
+    mode: 'train'
+    architecture: 'segformer_aux'
+    architecture_cfg: {hf_model_name: 'nvidia/segformer-b5-finetuned-ade-640-640', in_channels: 3, aux_loss_weight: 0.6, aux_in_channels: 320}
+    cross_validation: {enabled: True, k_folds: 3, random_state: 42}
+    dataset: {path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_From_RGB_2048'}
+    train: *train_defaults
+    post_tests:
+      - test_name: 'Standard_Eval'
+        dataset: {path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_From_RGB_2048'}
+        reconstruction: {enabled: true, original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source', original_patch_size: 2048}
+
+  - experiment_name: 'SegFormer_B5_Aux_VV_From_RGB_2048_Run4'
+    mode: 'train'
+    architecture: 'segformer_aux'
+    architecture_cfg: {hf_model_name: 'nvidia/segformer-b5-finetuned-ade-640-640', in_channels: 3, aux_loss_weight: 0.6, aux_in_channels: 320}
+    cross_validation: {enabled: True, k_folds: 3, random_state: 42}
+    dataset: {path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_From_RGB_2048'}
+    train: *train_defaults
+    post_tests:
+      - test_name: 'Standard_Eval'
+        dataset: {path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_From_RGB_2048'}
+        reconstruction: {enabled: true, original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source', original_patch_size: 2048}
+
 # # 實驗結果儲存路徑
 # results_base_dir: '/home/sean/oil_11_26/result/model/DV4_HNM_CV_SpectFormer_Base'
 # excel_log_path: '/home/sean/oil_11_26/result/excel_log/DV4_HNM_CV_SpectFormer_Base.xlsx'
@@ -219,224 +433,219 @@
 #           enabled: True
 #           saliency_map: True
 
-# 實驗結果儲存路徑
-results_base_dir: '/home/sean/oil_11_26/result/model/DV4_HNM_CV_ConvNeXt_Base'
-excel_log_path: '/home/sean/oil_11_26/result/excel_log/DV4_HNM_CV_ConvNeXt_Base.xlsx'
-
-experiments:
-
-  # ==========================================
-  # Group 1: VV HNM (1024 & 2048)
-  # ==========================================
-  - experiment_name: 'ConvNeXt_Base_VV_1024'
-    mode: 'train'
-    architecture: 'segnext'
-    architecture_cfg:
-      encoder_name: 'convnext_base' # [修改] 升級為 Base 版 (對標 SegFormer B5)
-      encoder_weights: 'imagenet'
-      in_channels: 3
-      decoder_channels: 256
-    cross_validation:
-      enabled: True
-      k_folds: 3
-      random_state: 42
-    dataset:
-      path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_1024/hnm_3_gold_dataset_ratio_1_1.5'
-    
-    # [修改] 訓練參數完全對齊學長設定
-    train: &train_defaults
-      epochs: 800
-      imgsz: 512
-      batch_size: 12      # [修改] 降為 12 以容納 Base 模型
-      workers: 4
-      patience: 50
-      lr0: 0.0001
-      amp: True
-      degrees: 20         # [修改] 增加旋轉角度
-      translate: 0.1
-      scale: 0            # [修改] 關閉縮放 (與學長一致)
-      fliplr: 0.5
-      flipud: 0.5         # [修改] 開啟垂直翻轉
-      gradient_accumulation_steps: 4 # [修改] 增加梯度累積
-      
-    post_tests:
-      - test_name: 'Standard_Eval'
-        dataset:
-          path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_1024/hnm_3_gold_dataset_ratio_1_1.5'
-        reconstruction:
-          enabled: true
-          original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source'
-          original_patch_size: 1024
-        # [新增] 補齊進階評估功能
-        evaluation_on_original:
-          enabled: true
-          original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source'
-        grad_cam:
-          enabled: True
-          saliency_map: True
-
-  - experiment_name: 'ConvNeXt_Base_VV_2048'
-    mode: 'train'
-    architecture: 'segnext'
-    architecture_cfg:
-      encoder_name: 'convnext_base'
-      encoder_weights: 'imagenet'
-      in_channels: 3
-      decoder_channels: 256
-    cross_validation:
-      enabled: True
-      k_folds: 3
-      random_state: 42
-    dataset:
-      path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_2048/hnm_3_gold_dataset_ratio_1_1.5'
-    train: *train_defaults
-    post_tests:
-      - test_name: 'Standard_Eval'
-        dataset:
-          path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_2048/hnm_3_gold_dataset_ratio_1_1.5'
-        reconstruction:
-          enabled: true
-          original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source'
-          original_patch_size: 2048
-        evaluation_on_original:
-          enabled: true
-          original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source'
-        grad_cam:
-          enabled: True
-          saliency_map: True
-
-  # ==========================================
-  # Group 2: RGB HNM (1024 & 2048)
-  # ==========================================
-  - experiment_name: 'ConvNeXt_Base_RGB_1024'
-    mode: 'train'
-    architecture: 'segnext'
-    architecture_cfg:
-      encoder_name: 'convnext_base'
-      encoder_weights: 'imagenet'
-      in_channels: 3
-      decoder_channels: 256
-    cross_validation:
-      enabled: True
-      k_folds: 3
-      random_state: 42
-    dataset:
-      path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/RGB_HNM_1024/hnm_3_gold_dataset_ratio_1_1.5'
-    train: *train_defaults
-    post_tests:
-      - test_name: 'Standard_Eval'
-        dataset:
-          path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/RGB_HNM_1024/hnm_3_gold_dataset_ratio_1_1.5'
-        reconstruction:
-          enabled: true
-          original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/01_Feature_Engineering/Pseudo_RGB_Full'
-          original_patch_size: 1024
-        evaluation_on_original:
-          enabled: true
-          original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/01_Feature_Engineering/Pseudo_RGB_Full'
-        grad_cam:
-          enabled: True
-          saliency_map: True
-
-  - experiment_name: 'ConvNeXt_Base_RGB_2048'
-    mode: 'train'
-    architecture: 'segnext'
-    architecture_cfg:
-      encoder_name: 'convnext_base'
-      encoder_weights: 'imagenet'
-      in_channels: 3
-      decoder_channels: 256
-    cross_validation:
-      enabled: True
-      k_folds: 3
-      random_state: 42
-    dataset:
-      path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/RGB_HNM_2048/hnm_3_gold_dataset_ratio_1_1.5'
-    train: *train_defaults
-    post_tests:
-      - test_name: 'Standard_Eval'
-        dataset:
-          path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/RGB_HNM_2048/hnm_3_gold_dataset_ratio_1_1.5'
-        reconstruction:
-          enabled: true
-          original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/01_Feature_Engineering/Pseudo_RGB_Full'
-          original_patch_size: 2048
-        evaluation_on_original:
-          enabled: true
-          original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/01_Feature_Engineering/Pseudo_RGB_Full'
-        grad_cam:
-          enabled: True
-          saliency_map: True
-
-  # ==========================================
-  # Group 3: VV HNM From RGB (1024 & 2048)
-  # ==========================================
-  - experiment_name: 'ConvNeXt_Base_VV_From_RGB_1024'
-    mode: 'train'
-    architecture: 'segnext'
-    architecture_cfg:
-      encoder_name: 'convnext_base'
-      encoder_weights: 'imagenet'
-      in_channels: 3
-      decoder_channels: 256
-    cross_validation:
-      enabled: True
-      k_folds: 3
-      random_state: 42
-    dataset:
-      path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_From_RGB_1024'
-    train: *train_defaults
-    post_tests:
-      - test_name: 'Standard_Eval'
-        dataset:
-          path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_From_RGB_1024'
-        reconstruction:
-          enabled: true
-          original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source'
-          original_patch_size: 1024
-        evaluation_on_original:
-          enabled: true
-          original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source'
-        grad_cam:
-          enabled: True
-          saliency_map: True
-
-  - experiment_name: 'ConvNeXt_Base_VV_From_RGB_2048'
-    mode: 'train'
-    architecture: 'segnext'
-    architecture_cfg:
-      encoder_name: 'convnext_base'
-      encoder_weights: 'imagenet'
-      in_channels: 3
-      decoder_channels: 256
-    cross_validation:
-      enabled: True
-      k_folds: 3
-      random_state: 42
-    dataset:
-      path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_From_RGB_2048'
-    train: *train_defaults
-    post_tests:
-      - test_name: 'Standard_Eval'
-        dataset:
-          path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_From_RGB_2048'
-        reconstruction:
-          enabled: true
-          original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source'
-          original_patch_size: 2048
-        evaluation_on_original:
-          enabled: true
-          original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source'
-        grad_cam:
-          enabled: True
-          saliency_map: True
-
-
 # # 實驗結果儲存路徑
-# results_base_dir: '/home/sean/oil_11_26/result/model/DV4_HNM_CV_SegFormer_Aux'
-# excel_log_path: '/home/sean/oil_11_26/result/excel_log/DV4_HNM_CV_SegFormer_Aux.xlsx'
+# results_base_dir: '/home/sean/oil_11_26/result/model/DV4_HNM_CV_ConvNeXt_Base'
+# excel_log_path: '/home/sean/oil_11_26/result/excel_log/DV4_HNM_CV_ConvNeXt_Base.xlsx'
 
 # experiments:
+
+#   # ==========================================
+#   # Group 1: VV HNM (1024 & 2048)
+#   # ==========================================
+#   - experiment_name: 'ConvNeXt_Base_VV_1024'
+#     mode: 'train'
+#     architecture: 'segnext'
+#     architecture_cfg:
+#       encoder_name: 'convnext_base' # [修改] 升級為 Base 版 (對標 SegFormer B5)
+#       encoder_weights: 'imagenet'
+#       in_channels: 3
+#       decoder_channels: 256
+#     cross_validation:
+#       enabled: True
+#       k_folds: 3
+#       random_state: 42
+#     dataset:
+#       path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_1024/hnm_3_gold_dataset_ratio_1_1.5'
+    
+#     # [修改] 訓練參數完全對齊學長設定
+#     train: &train_defaults
+#       epochs: 800
+#       imgsz: 512
+#       batch_size: 12      # [修改] 降為 12 以容納 Base 模型
+#       workers: 4
+#       patience: 50
+#       lr0: 0.0001
+#       amp: True
+#       degrees: 20         # [修改] 增加旋轉角度
+#       translate: 0.1
+#       scale: 0            # [修改] 關閉縮放 (與學長一致)
+#       fliplr: 0.5
+#       flipud: 0.5         # [修改] 開啟垂直翻轉
+#       gradient_accumulation_steps: 4 # [修改] 增加梯度累積
+      
+#     post_tests:
+#       - test_name: 'Standard_Eval'
+#         dataset:
+#           path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_1024/hnm_3_gold_dataset_ratio_1_1.5'
+#         reconstruction:
+#           enabled: true
+#           original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source'
+#           original_patch_size: 1024
+#         # [新增] 補齊進階評估功能
+#         evaluation_on_original:
+#           enabled: true
+#           original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source'
+#         grad_cam:
+#           enabled: True
+#           saliency_map: True
+
+#   - experiment_name: 'ConvNeXt_Base_VV_2048'
+#     mode: 'train'
+#     architecture: 'segnext'
+#     architecture_cfg:
+#       encoder_name: 'convnext_base'
+#       encoder_weights: 'imagenet'
+#       in_channels: 3
+#       decoder_channels: 256
+#     cross_validation:
+#       enabled: True
+#       k_folds: 3
+#       random_state: 42
+#     dataset:
+#       path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_2048/hnm_3_gold_dataset_ratio_1_1.5'
+#     train: *train_defaults
+#     post_tests:
+#       - test_name: 'Standard_Eval'
+#         dataset:
+#           path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_2048/hnm_3_gold_dataset_ratio_1_1.5'
+#         reconstruction:
+#           enabled: true
+#           original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source'
+#           original_patch_size: 2048
+#         evaluation_on_original:
+#           enabled: true
+#           original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source'
+#         grad_cam:
+#           enabled: True
+#           saliency_map: True
+
+#   # ==========================================
+#   # Group 2: RGB HNM (1024 & 2048)
+#   # ==========================================
+#   - experiment_name: 'ConvNeXt_Base_RGB_1024'
+#     mode: 'train'
+#     architecture: 'segnext'
+#     architecture_cfg:
+#       encoder_name: 'convnext_base'
+#       encoder_weights: 'imagenet'
+#       in_channels: 3
+#       decoder_channels: 256
+#     cross_validation:
+#       enabled: True
+#       k_folds: 3
+#       random_state: 42
+#     dataset:
+#       path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/RGB_HNM_1024/hnm_3_gold_dataset_ratio_1_1.5'
+#     train: *train_defaults
+#     post_tests:
+#       - test_name: 'Standard_Eval'
+#         dataset:
+#           path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/RGB_HNM_1024/hnm_3_gold_dataset_ratio_1_1.5'
+#         reconstruction:
+#           enabled: true
+#           original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/01_Feature_Engineering/Pseudo_RGB_Full'
+#           original_patch_size: 1024
+#         evaluation_on_original:
+#           enabled: true
+#           original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/01_Feature_Engineering/Pseudo_RGB_Full'
+#         grad_cam:
+#           enabled: True
+#           saliency_map: True
+
+#   - experiment_name: 'ConvNeXt_Base_RGB_2048'
+#     mode: 'train'
+#     architecture: 'segnext'
+#     architecture_cfg:
+#       encoder_name: 'convnext_base'
+#       encoder_weights: 'imagenet'
+#       in_channels: 3
+#       decoder_channels: 256
+#     cross_validation:
+#       enabled: True
+#       k_folds: 3
+#       random_state: 42
+#     dataset:
+#       path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/RGB_HNM_2048/hnm_3_gold_dataset_ratio_1_1.5'
+#     train: *train_defaults
+#     post_tests:
+#       - test_name: 'Standard_Eval'
+#         dataset:
+#           path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/RGB_HNM_2048/hnm_3_gold_dataset_ratio_1_1.5'
+#         reconstruction:
+#           enabled: true
+#           original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/01_Feature_Engineering/Pseudo_RGB_Full'
+#           original_patch_size: 2048
+#         evaluation_on_original:
+#           enabled: true
+#           original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/01_Feature_Engineering/Pseudo_RGB_Full'
+#         grad_cam:
+#           enabled: True
+#           saliency_map: True
+
+#   # ==========================================
+#   # Group 3: VV HNM From RGB (1024 & 2048)
+#   # ==========================================
+#   - experiment_name: 'ConvNeXt_Base_VV_From_RGB_1024'
+#     mode: 'train'
+#     architecture: 'segnext'
+#     architecture_cfg:
+#       encoder_name: 'convnext_base'
+#       encoder_weights: 'imagenet'
+#       in_channels: 3
+#       decoder_channels: 256
+#     cross_validation:
+#       enabled: True
+#       k_folds: 3
+#       random_state: 42
+#     dataset:
+#       path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_From_RGB_1024'
+#     train: *train_defaults
+#     post_tests:
+#       - test_name: 'Standard_Eval'
+#         dataset:
+#           path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_From_RGB_1024'
+#         reconstruction:
+#           enabled: true
+#           original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source'
+#           original_patch_size: 1024
+#         evaluation_on_original:
+#           enabled: true
+#           original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source'
+#         grad_cam:
+#           enabled: True
+#           saliency_map: True
+
+#   - experiment_name: 'ConvNeXt_Base_VV_From_RGB_2048'
+#     mode: 'train'
+#     architecture: 'segnext'
+#     architecture_cfg:
+#       encoder_name: 'convnext_base'
+#       encoder_weights: 'imagenet'
+#       in_channels: 3
+#       decoder_channels: 256
+#     cross_validation:
+#       enabled: True
+#       k_folds: 3
+#       random_state: 42
+#     dataset:
+#       path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_From_RGB_2048'
+#     train: *train_defaults
+#     post_tests:
+#       - test_name: 'Standard_Eval'
+#         dataset:
+#           path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_From_RGB_2048'
+#         reconstruction:
+#           enabled: true
+#           original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source'
+#           original_patch_size: 2048
+#         evaluation_on_original:
+#           enabled: true
+#           original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source'
+#         grad_cam:
+#           enabled: True
+#           saliency_map: True
+
+
 
   # # ==========================================
   # # Group 1: VV HNM (1024 & 2048)
@@ -486,30 +695,44 @@ experiments:
   #         enabled: true
   #         original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source'
   #         original_patch_size: 1024
-  #       # [新增] 原始大圖評估與 Grad-CAM
-  #       evaluation_on_original:
-  #         enabled: true
-  #         original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source'
-  #       grad_cam:
-  #         enabled: True
-  #         saliency_map: True
 
   # - experiment_name: 'SegFormer_B5_Aux_VV_2048'
   #   mode: 'train'
   #   architecture: 'segformer_aux'
+
   #   base_model: ''
+
   #   architecture_cfg:
+  #     # [修正] 對齊學長的 B5 模型設定
   #     hf_model_name: 'nvidia/segformer-b5-finetuned-ade-640-640'
   #     in_channels: 3
   #     aux_loss_weight: 0.6
   #     aux_in_channels: 320
+
   #   cross_validation:
   #     enabled: True
   #     k_folds: 3
   #     random_state: 42
+
   #   dataset:
   #     path: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/04_HNM_Experiments/VV_HNM_2048/hnm_3_gold_dataset_ratio_1_1.5'
-  #   train: *train_defaults
+
+  #   # [修正] 完全對齊學長的訓練參數
+  #   train: &train_defaults
+  #     epochs: 800
+  #     imgsz: 512
+  #     batch_size: 6      # B5 模型較大，Batch Size 較小
+  #     workers: 4
+  #     patience: 50
+  #     lr0: 0.0001
+  #     amp: True
+  #     degrees: 20         # 角度增加到 20
+  #     translate: 0.1
+  #     scale: 0            # 學長將 scale 設為 0
+  #     fliplr: 0.5
+  #     flipud: 0.5         # 開啟垂直翻轉
+  #     gradient_accumulation_steps: 8 # 梯度累積
+
   #   post_tests:
   #     - test_name: 'Standard_Eval'
   #       dataset:
@@ -518,16 +741,10 @@ experiments:
   #         enabled: true
   #         original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source'
   #         original_patch_size: 2048
-  #       evaluation_on_original:
-  #         enabled: true
-  #         original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source'
-  #       grad_cam:
-  #         enabled: True
-  #         saliency_map: True
 
-  # # ==========================================
-  # # Group 2: RGB HNM (1024 & 2048)
-  # # ==========================================
+  # ==========================================
+  # Group 2: RGB HNM (1024 & 2048)
+  # ==========================================
   # - experiment_name: 'SegFormer_B5_Aux_RGB_1024'
   #   mode: 'train'
   #   architecture: 'segformer_aux'
@@ -552,12 +769,6 @@ experiments:
   #         enabled: true
   #         original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/01_Feature_Engineering/Pseudo_RGB_Full'
   #         original_patch_size: 1024
-  #       evaluation_on_original:
-  #         enabled: true
-  #         original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/01_Feature_Engineering/Pseudo_RGB_Full'
-  #       grad_cam:
-  #         enabled: True
-  #         saliency_map: True
 
   # - experiment_name: 'SegFormer_B5_Aux_RGB_2048'
   #   mode: 'train'
@@ -583,16 +794,10 @@ experiments:
   #         enabled: true
   #         original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/01_Feature_Engineering/Pseudo_RGB_Full'
   #         original_patch_size: 2048
-  #       evaluation_on_original:
-  #         enabled: true
-  #         original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/01_Feature_Engineering/Pseudo_RGB_Full'
-  #       grad_cam:
-  #         enabled: True
-  #         saliency_map: True
 
-  # # ==========================================
-  # # Group 3: VV HNM From RGB (1024 & 2048)
-  # # ==========================================
+  # ==========================================
+  # Group 3: VV HNM From RGB (1024 & 2048)
+  # ==========================================
   # - experiment_name: 'SegFormer_B5_Aux_VV_From_RGB_1024'
   #   mode: 'train'
   #   architecture: 'segformer_aux'
@@ -617,12 +822,6 @@ experiments:
   #         enabled: true
   #         original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source'
   #         original_patch_size: 1024
-  #       evaluation_on_original:
-  #         enabled: true
-  #         original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source'
-  #       grad_cam:
-  #         enabled: True
-  #         saliency_map: True
 
   # - experiment_name: 'SegFormer_B5_Aux_VV_From_RGB_2048'
   #   mode: 'train'
@@ -662,12 +861,6 @@ experiments:
   #         enabled: true
   #         original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source'
   #         original_patch_size: 2048
-  #       evaluation_on_original:
-  #         enabled: true
-  #         original_data_root: '/home/sean/oil_11_26/dataset/DV4_SAR_Small_v3_relabel/00_Raw_Source'
-  #       grad_cam:
-  #         enabled: True
-  #         saliency_map: True
 
     
 

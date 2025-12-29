@@ -144,6 +144,10 @@ def train_model(config, results_path):
             # --- [FIX 1 END] ---
             'best_model_path': str(best_model_path)
         }
+        # 補上這一段：將 Adapter 的所有回傳內容（包含 best_val_score）合併進來
+        if isinstance(training_output, dict):
+            training_results.update(training_output)
+        
         print(f"訓練完成！耗時: {training_results['training_time_minutes']} 分鐘")
         return training_results
         
